@@ -47,7 +47,52 @@ const QueueDisplay = ({
             <h1 className="font-bold text-[1.5rem]">IN QUEUE</h1>
           </div>
         </div>
-        <div className="w-[80%] h-full border-[3px] border-[#A0A0A0]"></div>
+        <div className="w-[80%] h-full border-[3px] border-[#A0A0A0]">
+          <div className="grid grid-rows-2 grid-cols-3 h-full">
+            {/* First Row */}
+            <div className="p-4 border-r border-b border-[#A0A0A0]">
+              <h2 className="font-bold text-[1.5rem] mb-4">E-Reg</h2>
+              <div className="text-[2rem] space-y-2">
+                <div>402</div>
+                <div>403</div>
+                <div>404</div>
+              </div>
+            </div>
+            <div className="p-4 border-r border-b border-[#A0A0A0]">
+              <h2 className="font-bold text-[1.5rem] mb-4">OEC</h2>
+              <div className="text-[2rem] space-y-2">
+                <div>405</div>
+                <div>407</div>
+                <div>405</div>
+              </div>
+            </div>
+            <div className="p-4 border-b border-[#A0A0A0]">
+              <h2 className="font-bold text-[1.5rem] mb-4">Info Sheet</h2>
+              <div className="text-[2rem] space-y-2">
+                <div>409</div>
+                <div>408</div>
+                <div>411</div>
+              </div>
+            </div>
+
+            {/* Second Row */}
+            <div className="p-4 border-r border-[#A0A0A0]">
+              <h2 className="font-bold text-[1.5rem] mb-4">WRSD</h2>
+              <div className="text-[2rem]">420</div>
+            </div>
+            <div className="p-4 border-r border-[#A0A0A0]">
+              <h2 className="font-bold text-[1.5rem] mb-4">SENA</h2>
+              <div className="text-[2rem] space-y-2">
+                <div>412</div>
+                <div>416</div>
+              </div>
+            </div>
+            <div className="p-4">
+              <h2 className="font-bold text-[1.5rem] mb-4">Direct Hire</h2>
+              <div className="text-[2rem]">415</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
