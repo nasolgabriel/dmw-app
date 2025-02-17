@@ -1,10 +1,7 @@
-import QueueDisplayBlock from "@/components/queueDisplay/queueDisplayBlock";
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <>
-    <QueueDisplayBlock/>
-    </>
-  );
-}
+import dynamic from 'next/dynamic';
+
+const AppRouter = dynamic(() => import('../app/AppRouter'), { ssr: false });
+
+export default AppRouter;
