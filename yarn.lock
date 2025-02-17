@@ -619,6 +619,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
+"@remix-run/router@1.22.0":
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.22.0.tgz#dd8096cb055c475a4de6b35322b8d3b118c17b43"
+  integrity sha512-MBOl8MeOzpK0HQQQshKB7pABXbmyHizdTpqnrIseTbsv0nAepwC2ENZa1aaBExNQcpLoXmWthhak8SABLzvGPw==
+
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@rtsao/scc/-/scc-1.1.0.tgz"
@@ -2834,6 +2839,21 @@ react-is@^19.0.0:
   version "19.0.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.0.0.tgz#d6669fd389ff022a9684f708cf6fa4962d1fea7a"
   integrity sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==
+
+react-router-dom@6:
+  version "6.29.0"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.29.0.tgz#2ffb56b03ef3d6d6daafcfad9f3922132d2ced94"
+  integrity sha512-pkEbJPATRJ2iotK+wUwHfy0xs2T59YPEN8BQxVCPeBZvK7kfPESRc/nyxzdcxR17hXgUPYx2whMwl+eo9cUdnQ==
+  dependencies:
+    "@remix-run/router" "1.22.0"
+    react-router "6.29.0"
+
+react-router@6.29.0:
+  version "6.29.0"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.29.0.tgz#14a329ca838b4de048fc5cca82874b727ee546b7"
+  integrity sha512-DXZJoE0q+KyeVw75Ck6GkPxFak63C4fGqZGNijnWgzB/HzSP1ZfTlBj5COaGWwhrMQ/R8bXiq5Ooy4KG+ReyjQ==
+  dependencies:
+    "@remix-run/router" "1.22.0"
 
 react-transition-group@^4.4.5:
   version "4.4.5"
