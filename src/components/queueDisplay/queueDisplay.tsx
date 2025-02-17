@@ -50,7 +50,7 @@ const QueueDisplay = ({
         <div className="w-[80%] h-full border-[3px] border-[#A0A0A0]">
           <div className="grid grid-rows-2 grid-cols-3 h-full">
             {/* First Row */}
-            <div className="p-4 border-r border-b border-[#A0A0A0]">
+            <div className="p-4 border-r-[3px] border-b-[3px] border-[#A0A0A0]">
               <h2 className="font-bold text-[1.5rem] mb-4">E-Reg</h2>
               <div className="text-[2rem] space-y-2">
                 <div>402</div>
@@ -58,7 +58,7 @@ const QueueDisplay = ({
                 <div>404</div>
               </div>
             </div>
-            <div className="p-4 border-r border-b border-[#A0A0A0]">
+            <div className="p-4 border-r-[3px] border-b-[3px] border-[#A0A0A0]">
               <h2 className="font-bold text-[1.5rem] mb-4">OEC</h2>
               <div className="text-[2rem] space-y-2">
                 <div>405</div>
@@ -66,7 +66,7 @@ const QueueDisplay = ({
                 <div>405</div>
               </div>
             </div>
-            <div className="p-4 border-b border-[#A0A0A0]">
+            <div className="p-4 border-b-[3px] border-[#A0A0A0]">
               <h2 className="font-bold text-[1.5rem] mb-4">Info Sheet</h2>
               <div className="text-[2rem] space-y-2">
                 <div>409</div>
@@ -76,11 +76,11 @@ const QueueDisplay = ({
             </div>
 
             {/* Second Row */}
-            <div className="p-4 border-r border-[#A0A0A0]">
+            <div className="p-4 border-r-[3px] border-[#A0A0A0]">
               <h2 className="font-bold text-[1.5rem] mb-4">WRSD</h2>
               <div className="text-[2rem]">420</div>
             </div>
-            <div className="p-4 border-r border-[#A0A0A0]">
+            <div className="p-4 border-r-[3px] border-[#A0A0A0]">
               <h2 className="font-bold text-[1.5rem] mb-4">SENA</h2>
               <div className="text-[2rem] space-y-2">
                 <div>412</div>
