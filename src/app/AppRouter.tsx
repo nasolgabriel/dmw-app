@@ -1,7 +1,7 @@
 // src/app/AppRouter.tsx
 'use client';
 
-import QueueDisplayBlock from '@/components/queueDisplay/queueDisplayBlock';
+import QueueDisplay from '@/components/queueDisplay/queueDisplay';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const AppRouter: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/queue-display" element={<QueueDisplayBlock />} />
+        <Route path="/queue-display" element={<QueueDisplay />} />
       </Routes>
     </Router>
   );
