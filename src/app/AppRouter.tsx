@@ -3,24 +3,16 @@
 
 import LoginPage from '@/components/login/loginPage';
 import QueueDisplay from '@/components/queueDisplay/queueDisplay';
+import WindowView from '@/components/windowView/windowView';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-
-const Home: React.FC = () => (
-  <div>
-    <h1>Home</h1>
-    <nav>
-      <Link to="/queue-display">Go to Queue Display</Link>
-    </nav>
-  </div>
-);
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage/>} />
+        <Route path="/" element={<WindowView/>} />
         <Route path="/queue-display" element={<QueueDisplay />} />
       </Routes>
     </Router>
