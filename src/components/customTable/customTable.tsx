@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,6 +7,9 @@ import {
   TableHead,
   TableRow,
   Button,
+  Checkbox,
+  Box,
+  Typography,
   SxProps,
   Theme,
 } from "@mui/material";
@@ -23,27 +26,10 @@ import {
 /* ------------------------- */
 
 export interface CustomTableProps<DataType extends object> {
-  /**
-   * The column definitions used by react-table.
-   */
   columns: ColumnDef<DataType>[];
-
-  /**
-   * The data array to be displayed in the table.
-   */
   data: DataType[];
-
-  /**
-   * MUI sx prop for overriding or extending styles on the TableContainer.
-   */
   sx?: SxProps<Theme>;
-
-  /**
-   * Optional render function for the action button.
-   * Receives the current row as an argument.
-   */
   renderButton?: (row: Row<DataType>) => React.ReactNode;
-
 }
 
 /* ------------------------- */
@@ -51,30 +37,25 @@ export interface CustomTableProps<DataType extends object> {
 /* ------------------------- */
 
 const tableStyles = {
-  // Allows spacing between rows
   borderCollapse: "separate",
-  borderSpacing: "0 15px", // 8px vertical gap
-
-  // Header styling
+  borderSpacing: "0 15px",
   "& thead th": {
-    backgroundColor: "transparent", // Remove gray header background
-    borderBottom: "none", // Remove bottom border in header
+    backgroundColor: "white",
+    borderBottom: "none",
     fontWeight: 600,
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    
   },
-
-  // Row styling
   "& tbody tr": {
-    backgroundColor: "#F4F1F1", // Example row background color
-    borderRadius: 2, // Rounded corners
-    // boxShadow: '0 1px 4px rgba(0,0,0,0.1)', // (Optional) card-like shadow
+    backgroundColor: "#F4F1F1",
   },
-
-  // Remove the default cell border from MUI if you prefer
   "& tbody td": {
     border: "none",
+    verticalAlign: 'middle',
+    height: '72px',
   },
-
-  // Example: control padding & font size for cells
   "& .MuiTableCell-root": {
     py: 1.5,
     fontSize: "1rem",
@@ -91,11 +72,10 @@ export function CustomTable<DataType extends object>({
   sx,
   renderButton,
 }: CustomTableProps<DataType>) {
-  // Memoize columns and data to avoid unnecessary re-renders
+  const [showButtons, setShowButtons] = useState(false);
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
-  // Create the table instance from TanStack React Table
   const table = useReactTable({
     columns: memoizedColumns,
     data: memoizedData,
@@ -103,13 +83,7 @@ export function CustomTable<DataType extends object>({
   });
 
   return (
-    <TableContainer
-      sx={{
-        boxShadow: "none",
-        overflowX: "auto",
-        ...sx,
-      }}
-    >
+    <TableContainer sx={{ boxShadow: "none", overflowX: "auto", ...sx }}>
       <Table sx={tableStyles}>
         <TableHead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -122,8 +96,22 @@ export function CustomTable<DataType extends object>({
                   )}
                 </TableCell>
               ))}
-              {/* Empty header cell for the action column */}
-              <TableCell />
+              <TableCell align="right">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Checkbox
+                    checked={showButtons}
+                    onChange={(e) => setShowButtons(e.target.checked)}
+                    size="small"
+                  />
+                  <Typography variant="body2" sx={{fontWeight:"bold"}}>Choose client</Typography>
+                </Box>
+              </TableCell>
             </TableRow>
           ))}
         </TableHead>
@@ -137,12 +125,13 @@ export function CustomTable<DataType extends object>({
                 </TableCell>
               ))}
               <TableCell align="right">
-                {renderButton ? (
-                  renderButton(row)
-                ) : (
-                  <Button variant="contained" color="warning">
-                  </Button>
-                )}
+                {showButtons &&
+                  (renderButton ? (
+                    renderButton(row)
+                  ) : (
+                    <Button variant="contained" color="warning">
+                    </Button>
+                  ))}
               </TableCell>
             </TableRow>
           ))}
