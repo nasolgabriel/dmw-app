@@ -4,26 +4,40 @@ import {
   IconButton,
   InputAdornment,
   Typography,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
-import loginContent from "./loginContents";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 import Image from "next/image";
 import QM_logo from "../../assets/QM_logo.png";
 import CustomTextField from "../TextField";
-import { VisibilityOff, Visibility, CheckBox } from "@mui/icons-material";
 import Login_BG from "../../assets/Login_BG.jpg";
+import loginContent from "./loginContents";
 
 interface LoginPageProps {
+  username: string;
   password: string;
   showPassword: boolean;
+  rememberMe: boolean;
+  loginError: string | null;
+  onUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePasswordVisibility: () => void;
+  onRememberMeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLogin: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({
+  username,
   password,
   showPassword,
+  rememberMe,
+  loginError,
+  onUsernameChange,
   onPasswordChange,
   onTogglePasswordVisibility,
+  onRememberMeChange,
+  onLogin,
 }) => {
   return (
     <div className="flex justify-center items-center pl-20 w-screen h-screen">
@@ -46,17 +60,21 @@ const LoginPage: React.FC<LoginPageProps> = ({
       >
         <Image
           src={QM_logo}
-          alt={"queueMaster"}
+          alt="queueMaster"
           className="w-auto xl:h-[180px]"
-        ></Image>
+        />
         <div className="flex flex-col gap-3 w-[80%] px-10 pt-10">
           <p className="text-[#1a3463] font-bold">USERNAME</p>
           <CustomTextField
             name="username"
             variant="outlined"
             placeholder="Username"
+            value={username}
+            onChange={onUsernameChange}
             outlinedColor="#bbb9b9"
             filledColor="#d8d4d4"
+            error={!!loginError}
+            helperText={loginError || ""}
           />
           <p className="pt-5 text-[#1a3463] font-bold">PASSWORD</p>
           <CustomTextField
@@ -68,6 +86,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
             onChange={onPasswordChange}
             outlinedColor="#bbb9b9"
             filledColor="#d8d4d4"
+            error={!!loginError}
+            helperText={loginError || ""}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -83,11 +103,18 @@ const LoginPage: React.FC<LoginPageProps> = ({
             }
           />
           <div className="flex justify-between items-stretch font-bold text-[#1a3463]">
-            <div className="flex">
-              <CheckBox />
-              <p>Remember Me</p>
-            </div>
-            <p>Forget Password</p>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={onRememberMeChange}
+                  name="rememberMe"
+                  color="primary"
+                />
+              }
+              label="Remember Me"
+            />
+            <p className="pt-2">Forget Password</p>
           </div>
           <Button
             variant="contained"
@@ -104,6 +131,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 backgroundColor: "#002a7a",
               },
             }}
+            onClick={onLogin}
           >
             Login
           </Button>
@@ -121,7 +149,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
             {loginContent.subSection}
           </Typography>
           <Typography
-            className="text-white "
+            className="text-white"
             sx={{ fontWeight: "bold", fontSize: "24px" }}
           >
             {loginContent.institute}
