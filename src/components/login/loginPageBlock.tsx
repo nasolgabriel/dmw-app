@@ -48,11 +48,16 @@ const LoginPageBlock: React.FC = () => {
         alert("Login Successful");
       } else {
         setLoginError("Invalid username or password.");
+        // Clear stored credentials and update hook state
+        localStorage.removeItem("rememberedUser");
+        localStorage.removeItem("rememberedPassword");
+        setUsername("");
+        setPassword("");
         setTimeout(() => setLoginError(null), 2000);
       }
     } catch (error) {
       if (error instanceof yup.ValidationError) {
-        setLoginError(error.errors.join(" "));
+        setLoginError(error.errors.join("and "));
         setTimeout(() => setLoginError(null), 2000);
       }
     }
