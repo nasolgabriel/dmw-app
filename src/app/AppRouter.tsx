@@ -1,11 +1,10 @@
 "use client";
 
-import LoginPage from "@/components/login/loginPage";
-import LoginPageBlock from "@/components/login/loginPageBlock";
-import QueueDisplay from "@/components/queueDisplay/queueDisplay";
-import WindowViewBlock from "@/components/windowView/windowViewBlock";
+import LoginPageBlock from "@/app/(auth)/login/loginPageBlock";
+import QueueDisplay from "@/app/public/queueDisplay/queueDisplay";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import WindowViewBlock from "./protected/windowView/windowViewBlock";
 
 const AppRouter: React.FC = () => {
   return (

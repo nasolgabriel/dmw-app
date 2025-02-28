@@ -1,11 +1,11 @@
 import { Button, Container } from "@mui/material";
-import HeaderBar from "../headerBar/headerBar";
 import { useState } from "react";
-import { CustomTable } from "../customTable/customTable";
 import { data } from "@/mocks/customTableMock";
 import ClientCard from "./clientCard";
 import { mockOnProcessQueueData } from "@/mocks";
 import StartIcon from '@mui/icons-material/Start';
+import { CustomTable } from "@/components/customTable/customTable";
+import HeaderBar from "@/components/headerBar/headerBar";
 
 const WindowViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("WINDOW 1");

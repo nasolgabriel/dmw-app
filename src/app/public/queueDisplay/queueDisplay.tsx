@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import QueueSection from "./queueNumberDisplay";
-import HeaderBar from "../headerBar/headerBar";
+import HeaderBar from "../../../components/headerBar/headerBar";
 import { mockQueueData } from "@/mocks";
+import QueueSection from "./queueNumberDisplay";
 
 const QueueDisplay = () => {
   return (
