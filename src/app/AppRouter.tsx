@@ -22,6 +22,7 @@ const AppRouter: React.FC = () => {
       <Routes>
         <Route path="/" element={<LoginPage/>} />
         <Route path="/queue-display" element={<QueueDisplay />} />
+        
       </Routes>
     </Router>
   );
