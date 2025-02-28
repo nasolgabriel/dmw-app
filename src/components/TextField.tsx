@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
+import React, { useState } from "react";
+import TextField, { TextFieldProps } from "@mui/material/TextField";
+import { styled } from "@mui/material/styles";
 
 export type CustomTextFieldProps = TextFieldProps & {
   outlinedColor?: string;
@@ -10,35 +10,39 @@ export type CustomTextFieldProps = TextFieldProps & {
 
 const StyledTextField = styled(TextField, {
   // Prevent custom props from being forwarded to the DOM
-  shouldForwardProp: (prop) => prop !== 'outlinedColor' && prop !== 'filledColor',
+  shouldForwardProp: (prop) =>
+    prop !== "outlinedColor" && prop !== "filledColor",
 })<CustomTextFieldProps>(({ theme, outlinedColor, filledColor, error }) => ({
   // Static label (non-floating)
-  '& .MuiInputLabel-root': {
-    position: 'static',
-    transform: 'none',
+  "& .MuiInputLabel-root": {
+    position: "static",
+    transform: "none",
     color: error ? theme.palette.error.main : undefined,
   },
   // Outlined variant styling: apply filledColor as background along with custom border colors
-  '& .MuiOutlinedInput-root': {
+  "& .MuiOutlinedInput-root": {
     backgroundColor: filledColor || undefined,
-    '& .MuiOutlinedInput-notchedOutline': {
+    "& .MuiOutlinedInput-notchedOutline": {
       borderColor: error
         ? theme.palette.error.main
         : outlinedColor || theme.palette.grey[400],
     },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
+    "&:hover .MuiOutlinedInput-notchedOutline": {
       borderColor: error
         ? theme.palette.error.main
         : outlinedColor || theme.palette.text.primary,
     },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    "& .MuiFormHelperText-root": {
+      minHeight: "1rem",
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
       borderColor: error
         ? theme.palette.error.main
         : outlinedColor || theme.palette.primary.main,
     },
   },
   // Filled variant styling
-  '& .MuiFilledInput-root': {
+  "& .MuiFilledInput-root": {
     backgroundColor: filledColor || theme.palette.background.paper,
   },
 }));
@@ -48,7 +52,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   filledColor,
   helperText,
   error,
-  variant = 'outlined',
+  variant = "outlined",
   value,
   defaultValue,
   onChange,
@@ -57,7 +61,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   ...props
 }) => {
   // For uncontrolled usage, manage internal state
-  const [internalValue, setInternalValue] = useState(defaultValue || '');
+  const [internalValue, setInternalValue] = useState(defaultValue || "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {

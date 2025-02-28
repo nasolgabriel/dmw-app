@@ -52,7 +52,7 @@ const LoginPageBlock: React.FC = () => {
       }
     } catch (error) {
       if (error instanceof yup.ValidationError) {
-        setLoginError(error.errors.join(", "));
+        setLoginError(error.errors.join(" "));
         setTimeout(() => setLoginError(null), 2000);
       }
     }
