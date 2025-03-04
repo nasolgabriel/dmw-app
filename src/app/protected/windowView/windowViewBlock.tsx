@@ -3,7 +3,7 @@ import { useState } from "react";
 import { data } from "@/mocks/customTableMock";
 import ClientCard from "./clientCard";
 import { mockOnProcessQueueData } from "@/mocks";
-import StartIcon from '@mui/icons-material/Start';
+import StartIcon from "@mui/icons-material/Start";
 import { CustomTable } from "@/components/customTable/customTable";
 import HeaderBar from "@/components/headerBar/headerBar";
 
@@ -53,45 +53,45 @@ const WindowViewBlock: React.FC = () => {
               }}
               renderButton={(row) => {
                 return (
-                    <Button
+                  <Button
                     variant="contained"
                     sx={{
                       backgroundColor: "transparent",
                       color: "black",
                       "&:hover": {
-                      backgroundColor: "transparent",
+                        backgroundColor: "transparent",
                       },
                       boxShadow: "none",
                     }}
                     onClick={() => {
                       console.log("Button clicked for row", row.original);
                     }}
-                    >
+                  >
                     <StartIcon sx={{ color: "black" }} />
-                    </Button>
+                  </Button>
                 );
               }}
             />
             <div className="flex justify-end mt-4 mr-10">
               <Button
-              variant="contained"
-              sx={{
-                bgcolor: "#FEAF00",
-                "&:hover": {
-                bgcolor: "#E9A000",
-                },
-                "&:active": {
-                bgcolor: "forestgreen",
-                },
-                width: "fit-Container",
-              }}
+                variant="contained"
+                sx={{
+                  bgcolor: "#FEAF00",
+                  "&:hover": {
+                    bgcolor: "#E9A000",
+                  },
+                  "&:active": {
+                    bgcolor: "forestgreen",
+                  },
+                  width: "fit-Container",
+                }}
               >
-              PROCEED
+                PROCEED
               </Button>
             </div>
           </Container>
         </div>
-        <div className="w-[50%] h-full flex justify-end">
+        <div className="w-[50%] h-full flex justify-start items-end flex-col">
           <div className="w-[80%] h-[70%] bg-[#F4F4F4] mt-5 mr-10 rounded-3xl flex flex-col justify-between">
             <ClientCard clientData={mockOnProcessQueueData[0]} />
             {/* Action Buttons */}
@@ -125,6 +125,9 @@ const WindowViewBlock: React.FC = () => {
                 Done
               </Button>
             </div>
+          </div>
+          <div className="p-10">
+            <Button variant="contained"  color="error">LOGOUT</Button>
           </div>
         </div>
       </div>
