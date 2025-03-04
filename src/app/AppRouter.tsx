@@ -1,26 +1,17 @@
-// src/app/AppRouter.tsx
-'use client';
+"use client";
 
-import LoginPage from '@/components/login/loginPage';
-import QueueDisplay from '@/components/queueDisplay/queueDisplay';
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-
-
-const Home: React.FC = () => (
-  <div>
-    <h1>Home</h1>
-    <nav>
-      <Link to="/queue-display">Go to Queue Display</Link>
-    </nav>
-  </div>
-);
+import LoginPageBlock from "@/app/(auth)/login/loginPageBlock";
+import QueueDisplay from "@/app/public/queueDisplay/queueDisplay";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import WindowViewBlock from "./protected/windowView/windowViewBlock";
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage/>} />
+        <Route path="/" element={<LoginPageBlock />} />
+        <Route path="/window-view" element={<WindowViewBlock />} />
         <Route path="/queue-display" element={<QueueDisplay />} />
       </Routes>
     </Router>

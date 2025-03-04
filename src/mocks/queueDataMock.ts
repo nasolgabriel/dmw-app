@@ -43,3 +43,31 @@ export const fullQueueMock: FullQueueData = {
   sena: [412, 416],
   directHire: [415],
 };
+
+export type OnProcessQueue = {
+  queueNumbers: (string | number)[];
+  name: string;
+  age: number;
+  sex: string;
+  contact: string;
+  address: string;
+  email: string;
+  passportNumber: number;
+  appointment: boolean;
+  transaction: string;
+};
+
+export const mockOnProcessQueueData: OnProcessQueue[] = [
+  {
+    queueNumbers: [402, 403],
+    name: "John Doe",
+    age: 30,
+    sex: "Male",
+    contact: "123-456-7890",
+    address: "123 Main St, Anytown, USA",
+    email: "johndoe@example.com",
+    passportNumber: 123456789,
+    appointment: true,
+    transaction: "OEC",
+  }
+];
