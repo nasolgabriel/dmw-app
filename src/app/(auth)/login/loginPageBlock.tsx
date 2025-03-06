@@ -51,7 +51,6 @@ const LoginPageBlock: React.FC = () => {
         // Clear stored credentials and update hook state
         localStorage.removeItem("rememberedUser");
         localStorage.removeItem("rememberedPassword");
-        setUsername("");
         setPassword("");
         setTimeout(() => setLoginError(null), 2000);
       }
