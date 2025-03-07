@@ -10,6 +10,4 @@ Route::get('/', function () {
 Route::get('/users', [UserController::class, 'index']);
 
 
-
-
 require __DIR__.'/auth.php';
