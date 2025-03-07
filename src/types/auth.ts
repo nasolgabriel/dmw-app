@@ -6,7 +6,7 @@ export interface LoginCredentials {
 export interface LoginResponse {
   success: boolean;
   message: string;
-  access_token?: string;
+  access_token: string;
   errors?: {
     username?: string[];
     password?: string[];

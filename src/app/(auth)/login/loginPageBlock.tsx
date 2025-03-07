@@ -58,6 +58,7 @@ const LoginPageBlock: React.FC = () => {
       const response = await executeLogin({ username, password });
       if (response.success) {
         setLoginErrors({});
+        localStorage.setItem("access_token", response.access_token);
         if (!rememberMe || !rememberPassword) {
           localStorage.removeItem("rememberedUser");
           localStorage.removeItem("rememberedPassword");
