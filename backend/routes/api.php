@@ -28,7 +28,7 @@ Route::prefix('clients')->group(function () {
 });
 
 // Queue Routes
-Route::prefix('queue')->group(function () {
+Route::prefix('queues')->group(function () {
     Route::get('/', [QueueController::class, 'index']);
     Route::get('/active', [QueueController::class, 'activeQueue']);
     Route::post('/', [QueueController::class, 'store']);
