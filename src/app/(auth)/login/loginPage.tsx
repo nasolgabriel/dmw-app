@@ -1,3 +1,4 @@
+// src/pages/loginPage.tsx
 import {
   Button,
   Container,
@@ -19,7 +20,8 @@ interface LoginPageProps {
   password: string;
   showPassword: boolean;
   rememberMe: boolean;
-  loginError: string | null;
+  // Changed from a single string to an object with separate errors.
+  loginErrors: { username?: string; password?: string };
   onUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePasswordVisibility: () => void;
@@ -32,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
   password,
   showPassword,
   rememberMe,
-  loginError,
+  loginErrors,
   onUsernameChange,
   onPasswordChange,
   onTogglePasswordVisibility,
@@ -66,8 +68,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
             onChange={onUsernameChange}
             outlinedColor="#bbb9b9"
             filledColor="#d8d4d4"
-            error={!!loginError}
-            helperText={loginError || ""}
+            error={!!loginErrors.username}
+            helperText={loginErrors.username || ""}
           />
           <p className="pt-5 text-[#1a3463] font-bold">PASSWORD</p>
           <CustomTextField
@@ -79,8 +81,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
             onChange={onPasswordChange}
             outlinedColor="#bbb9b9"
             filledColor="#d8d4d4"
-            error={!!loginError}
-            helperText={loginError || ""}
+            error={!!loginErrors.password}
+            helperText={loginErrors.password || ""}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -107,7 +109,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
               }
               label="Remember Me"
             />
-            </div>
+          </div>
           <Button
             variant="contained"
             name="Login"

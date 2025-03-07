@@ -127,7 +127,9 @@ const WindowViewBlock: React.FC = () => {
             </div>
           </div>
           <div className="p-10">
-            <Button variant="contained"  color="error">LOGOUT</Button>
+            <Button variant="contained" color="error">
+              LOGOUT
+            </Button>
           </div>
         </div>
       </div>

@@ -1,11 +1,25 @@
+// src/pages/LoginPageBlock.tsx
 import { useRememberMe } from "@/hooks/useRememberMe";
 import { useState } from "react";
 import LoginPage from "./loginPage";
-import * as yup from "yup";
-import { loginSchema } from "./validation";
-import { mockUser } from "@/mocks/loginMock";
+import { useApiCallback } from "@/hooks/useApi";
+import { LoginCredentials, LoginResponse } from "@/types/auth";
+import { loginApi } from "@/api/authApi";
+import { useNavigate } from "react-router-dom";
+
+interface LoginErrors {
+  username?: string;
+  password?: string;
+}
 
 const LoginPageBlock: React.FC = () => {
+  const { execute: executeLogin, loading } = useApiCallback<
+    LoginResponse,
+    [LoginCredentials]
+  >(loginApi);
+
+  const navigate = useNavigate();
+
   const [username, setUsername, rememberMe, setRememberMe] = useRememberMe(
     "rememberedUser",
     ""
@@ -13,15 +27,19 @@ const LoginPageBlock: React.FC = () => {
   const [password, setPassword, rememberPassword, setRememberPassword] =
     useRememberMe("rememberedPassword", "", true);
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginErrors, setLoginErrors] = useState<LoginErrors>({});
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (loginError) setLoginError(null);
+    if (loginErrors.username) {
+      setLoginErrors((prev) => ({ ...prev, username: undefined }));
+    }
     setUsername(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (loginError) setLoginError(null);
+    if (loginErrors.password) {
+      setLoginErrors((prev) => ({ ...prev, password: undefined }));
+    }
     setPassword(e.target.value);
   };
 
@@ -37,28 +55,53 @@ const LoginPageBlock: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      await loginSchema.validate({ username, password }, { abortEarly: false });
-      if (username === mockUser.username && password === mockUser.password) {
-        setLoginError(null);
-        // If "Remember Me" is not checked, clear both stored items.
+      const response = await executeLogin({ username, password });
+      if (response.success) {
+        setLoginErrors({});
         if (!rememberMe || !rememberPassword) {
           localStorage.removeItem("rememberedUser");
           localStorage.removeItem("rememberedPassword");
         }
-        alert("Login Successful");
+        navigate("/window-view");
       } else {
-        setLoginError("Invalid username or password.");
-        // Clear stored credentials and update hook state
+        setLoginErrors({
+          username: "Invalid username or password.",
+          password: "Invalid username or password.",
+        });
         localStorage.removeItem("rememberedUser");
         localStorage.removeItem("rememberedPassword");
         setPassword("");
-        setTimeout(() => setLoginError(null), 2000);
+        setTimeout(() => setLoginErrors({}), 2000);
       }
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        setLoginError(error.errors.join("and "));
-        setTimeout(() => setLoginError(null), 2000);
+    } catch (error: any) {
+      localStorage.removeItem("rememberedUser");
+      localStorage.removeItem("rememberedPassword");
+      setPassword("");
+
+      if (error.response && error.response.data) {
+        const { message, errors } = error.response.data;
+        if (message === "Validation Error" && errors) {
+          const apiErrors: LoginErrors = {};
+          if (errors.username) {
+            apiErrors.username = errors.username.join(" ");
+          }
+          if (errors.password) {
+            apiErrors.password = errors.password.join(" ");
+          }
+          setLoginErrors(apiErrors);
+        } else {
+          setLoginErrors({
+            username: "Invalid username or password.",
+            password: "Invalid username or password.",
+          });
+        }
+      } else {
+        setLoginErrors({
+          username: error.message || "An error occurred during login.",
+          password: error.message || "An error occurred during login.",
+        });
       }
+      setTimeout(() => setLoginErrors({}), 2000);
     }
   };
 
@@ -73,7 +116,7 @@ const LoginPageBlock: React.FC = () => {
       onTogglePasswordVisibility={togglePasswordVisibility}
       onRememberMeChange={handleRememberMeChange}
       onLogin={handleLogin}
-      loginError={loginError}
+      loginErrors={loginErrors}
     />
   );
 };
