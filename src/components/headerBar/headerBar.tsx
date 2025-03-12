@@ -30,10 +30,10 @@ const HeaderBar: React.FC = () => {
             id="time"
             className="flex flex-col justify-end items-end text-[#000000] font-bold mr-5"
           >
-            <span className="text-[2.5rem]">
+            <span className="text-[1.5rem] xl:text-[2.5rem]">
               {currentTime.toLocaleTimeString()}
             </span>
-            <span className="text-[1.5rem] mt-[-10] mb-2">
+            <span className="text-[.5rem] xl:text-[1.5rem] mt-[-10] mb-2">
               {currentTime.toDateString()}
             </span>
           </div>

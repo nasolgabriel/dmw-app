@@ -6,14 +6,13 @@ export type CustomTextFieldProps = TextFieldProps & {
   outlinedColor?: string;
   filledColor?: string;
   endAdornment?: React.ReactNode;
+  readOnly?: boolean;
 };
 
 const StyledTextField = styled(TextField, {
-  // Prevent custom props from being forwarded to the DOM
   shouldForwardProp: (prop) =>
-    prop !== "outlinedColor" && prop !== "filledColor",
+    prop !== "outlinedColor" && prop !== "filledColor" && prop !== "readOnly",
 })<CustomTextFieldProps>(({ theme, outlinedColor, filledColor, error }) => ({
-  // Static label (non-floating)
   "& .MuiInputLabel-root": {
     position: "static",
     transform: "none",
@@ -40,6 +39,7 @@ const StyledTextField = styled(TextField, {
         ? theme.palette.error.main
         : outlinedColor || theme.palette.primary.main,
     },
+    
   },
   // Filled variant styling
   "& .MuiFilledInput-root": {
@@ -58,27 +58,29 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   onChange,
   endAdornment,
   InputProps,
+  readOnly,
   ...props
 }) => {
   // For uncontrolled usage, manage internal state
   const [internalValue, setInternalValue] = useState(defaultValue || "");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (onChange) {
+    if (onChange && !readOnly) {
       onChange(event);
     }
-    // Only update internal state if not controlled
-    if (value === undefined) {
+    // Only update internal state if not controlled and not readOnly
+    if (value === undefined && !readOnly) {
       setInternalValue(event.target.value);
     }
   };
 
   const inputValue = value !== undefined ? value : internalValue;
 
-  // Merge any provided InputProps with the custom endAdornment
+  // Merge any provided InputProps with the custom endAdornment and readOnly
   const combinedInputProps = {
     ...InputProps,
     endAdornment: endAdornment || InputProps?.endAdornment,
+    readOnly: readOnly,
   };
 
   return (
