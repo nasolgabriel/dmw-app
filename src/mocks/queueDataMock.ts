@@ -1,48 +1,109 @@
-export type QueueData = {
-  title: string;
-  queueNumbers: (string | number)[];
+export type CounterType = "window" | "agency" | "cashier" | "queue";
+
+export type MockQueueNumber = {
+  counter: string;
+  clientNumber?: number | number[];
+  type: CounterType;
+  division: string;
 };
 
-export const mockQueueData: QueueData[] = [
+export const mockQueueData: MockQueueNumber[] = [
   {
-    title: "E-Reg",
-    queueNumbers: [402, 403, 404],
+    counter: "Window 1",
+    clientNumber: 101,
+    type: "window",
+    division: "MIGRANT WORKERS PROTECTION",
   },
   {
-    title: "OEC",
-    queueNumbers: [405, 407, 405],
+    counter: "Window 2",
+    clientNumber: 102,
+    type: "window",
+    division: "MIGRANT WORKERS PROTECTION",
   },
   {
-    title: "Info Sheet",
-    queueNumbers: [409, 408, 411],
+    counter: "Window 3",
+    clientNumber: 103,
+    type: "window",
+    division: "MIGRANT WORKERS PROTECTION",
+  },
+
+  // Migrant Worker Processing Division (404-407)
+  {
+    counter: "Window 4",
+    clientNumber: 104,
+    type: "window",
+    division: "MIGRANT WORKER PROCESSING",
   },
   {
-    title: "WRSD",
-    queueNumbers: [420],
+    counter: "Window 5",
+    clientNumber: 105,
+    type: "window",
+    division: "MIGRANT WORKER PROCESSING",
   },
   {
-    title: "SENA",
-    queueNumbers: [412, 416],
+    counter: "Window 6",
+    clientNumber: 106,
+    type: "window",
+    division: "MIGRANT WORKER PROCESSING",
   },
   {
-    title: "Direct Hire",
-    queueNumbers: [415],
+    counter: "Window 7",
+    clientNumber: 107,
+    type: "window",
+    division: "MIGRANT WORKER PROCESSING",
+  },
+
+  // Welfare Reintegration Division (408-410)
+  {
+    counter: "Window 8",
+    clientNumber: 108,
+    type: "window",
+    division: "WELFARE REINTEGRATION",
+  },
+  {
+    counter: "Window 9",
+    clientNumber: 109,
+    type: "window",
+    division: "WELFARE REINTEGRATION",
+  },
+  {
+    counter: "Window 10",
+    clientNumber: 110,
+    type: "window",
+    division: "WELFARE REINTEGRATION",
+  },
+
+  // Attached Agencies (411-412)
+  {
+    counter: "PAG-IBIG",
+    clientNumber: 201,
+    type: "agency",
+    division: "ATTACHED AGENCIES",
+  },
+  {
+    counter: "OWWA",
+    clientNumber: 301,
+    type: "agency",
+    division: "ATTACHED AGENCIES",
+  },
+
+  // Special Counters
+  {
+    counter: "Cashier",
+    clientNumber: 401,
+    type: "cashier",
+    division: "SPECIAL SERVICES",
+  },
+  {
+    counter: "Waiting Queue",
+    clientNumber: [
+      501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515,
+      516,
+    ],
+    type: "queue",
+    division: "QUEUE MANAGEMENT",
   },
 ];
-
-// Optional: Type for complete queue display data
-export type FullQueueData = {
-  [key: string]: (string | number)[];
-};
-
-export const fullQueueMock: FullQueueData = {
-  eReg: [402, 403, 404],
-  oec: [405, 407, 405],
-  infoSheet: [409, 408, 411],
-  wrsd: [420],
-  sena: [412, 416],
-  directHire: [415],
-};
 
 export type OnProcessQueue = {
   queueNumbers: (string | number)[];
@@ -69,5 +130,5 @@ export const mockOnProcessQueueData: OnProcessQueue[] = [
     passportNumber: 123456789,
     appointment: true,
     transaction: "OEC",
-  }
+  },
 ];
