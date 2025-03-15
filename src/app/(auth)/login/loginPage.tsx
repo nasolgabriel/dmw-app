@@ -13,7 +13,7 @@ import Image from "next/image";
 import QM_logo from "../../../assets/QM_logo.png";
 import Login_BG from "../../../assets/Login_BG.jpg";
 import loginContent from "./loginContents";
-import CustomTextField from "@/components/TextField";
+import CustomTextField from "@/components/textfields/TextField";
 
 interface LoginPageProps {
   username: string;
