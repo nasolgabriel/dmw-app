@@ -19,3 +19,21 @@ body {
   background: var(--background);
   font-family: sans-serif;
 }
+
+@keyframes blink {
+  0% {
+    color: inherit;
+  }
+  50% {
+    color: red;
+  }
+  100% {
+    color: inherit;
+  }
+}
+
+.blinking-text {
+  animation: blink 600ms infinite;
+  animation-duration: 600ms;
+  animation-timing-function: steps(2, jump-none);
+}

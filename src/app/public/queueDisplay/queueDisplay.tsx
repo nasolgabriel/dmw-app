@@ -2,81 +2,45 @@
 
 import React from "react";
 import HeaderBar from "../../../components/headerBar/headerBar";
-import { mockQueueData } from "@/mocks";
-import QueueSection from "./queueNumberDisplay";
+import QueueCounters from "./WindowsDisplay/queueCounters";
 
-const QueueDisplay = () => {
+interface QueueDisplayProps {
+  cashierData: any;
+  queueData: any;
+}
+
+const QueueDisplay: React.FC<QueueDisplayProps> = ({ cashierData, queueData }) => {
+
+
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen overflow-hidden">
       <HeaderBar />
       <div className="flex h-[90%]">
-        <div className="w-[30%] h-full border-t-[3px] border-l-[3px] border-b-[3px] border-[#A0A0A0]">
-          <div className="ml-10 mt-5">
-            <h1 className="font-bold text-[2rem]">IN QUEUE</h1>
-          </div>
+        <div className="w-[80%] h-full overflow-clip">
+          <QueueCounters />
         </div>
-        <div className="w-[80%] h-full border-[3px] border-[#A0A0A0]">
-          <div className="grid grid-rows-2 grid-cols-3 h-full">
-            {/* First Row */}
-            <div className="border-r-[3px] border-b-[3px] border-[#A0A0A0]">
-              <QueueSection
-                title="E-Reg"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "E-Reg")
-                    ?.queueNumbers || []
-                }
-              />
-            </div>
-
-            <div className="border-r-[3px] border-b-[3px] border-[#A0A0A0]">
-              <QueueSection
-                title="OEC"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "OEC")
-                    ?.queueNumbers || []
-                }
-              />
-            </div>
-
-            <div className="border-b-[3px] border-[#A0A0A0]">
-              <QueueSection
-                title="Info Sheet"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "Info Sheet")
-                    ?.queueNumbers || []
-                }
-              />
-            </div>
-
-            {/* Second Row */}
-            <div className="border-r-[3px] border-[#A0A0A0]">
-              <QueueSection
-                title="WRSD"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "WRSD")
-                    ?.queueNumbers || []
-                }
-              />
-            </div>
-
-            <div className="border-r-[3px] border-[#A0A0A0]">
-              <QueueSection
-                title="SENA"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "SENA")
-                    ?.queueNumbers || []
-                }
-              />
-            </div>
-
-            <div>
-              <QueueSection
-                title="Direct Hire"
-                queueNumbers={
-                  mockQueueData.find((data) => data.title === "Direct Hire")
-                    ?.queueNumbers || []
-                }
-              />
+        <div className="w-[20%] h-full border-t-[3px] border-r-[3px] border-b-[3px] border-[#A0A0A0] flex flex-col">
+          <div className="p-5 flex-none flex flex-col w-full">
+            <h1 className="font-bold text-[1rem] xl:text-[2rem] text-left">CASHIER</h1>
+            <h1 className="font-bold text-[1rem] xl:text-[4rem] text-center m-10">
+              {cashierData?.clientNumber}
+            </h1>
+          </div>
+          <div className="flex-1">
+            <div className="p-5 flex flex-col border-t-[3px] border-[#A0A0A0] h-[600px]">
+              <h1 className="font-bold text-[1rem] xl:text-[2rem] text-left pb-2">IN QUEUE</h1>
+              <div className="flex flex-col flex-wrap gap-x-24 content-start overflow-hidden pl-10">
+                {Array.isArray(queueData?.clientNumber)
+                  ? queueData.clientNumber.map((num: string, index: number) => (
+                      <h1
+                        key={index}
+                        className="font-extrabold text-[1rem] xl:text-[2rem] mb-2 w-[80px]"
+                      >
+                        {num}
+                      </h1>
+                    ))
+                  : null}
+              </div>
             </div>
           </div>
         </div>
