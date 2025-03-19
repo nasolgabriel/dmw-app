@@ -10,15 +10,29 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'firstName',
+        'middleName',
+        'lastName',
         'contact',
         'purpose',
         'age',
+        'birthday',
         'sex',
         'status',
         'passport_number',
         'email',
         'address'
+        
+    ];
+
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'priority' => 'boolean',
     ];
 
     /**
@@ -28,4 +42,16 @@ class Client extends Model
     {
         return $this->hasMany(Queue::class);
     }
-}       
+    
+    /**
+     * Get the client's full name.
+     */
+    public function getFullNameAttribute()
+    {
+        return trim(
+            ($this->firstName ?? '') . ' ' . 
+            ($this->middleName ?? '') . ' ' . 
+            ($this->lastName ?? '')
+        );
+    }
+}
