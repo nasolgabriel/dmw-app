@@ -8,27 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Queue extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
         'ticket_number',
         'client_id',
-        'service_id',
-        'status',
+        'counter_id', // Changed from service_id to counter_id
+        'status'
     ];
-
-    /**
-     * Get the client that owns the queue entry.
-     */
+    
+    // Update your relationships too if needed
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class);  
     }
-
-    /**
-     * Get the service associated with this queue entry.
-     */
-    public function service()
+    
+    public function counter()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(ServiceCounter::class, 'counter_id');
     }
 }
