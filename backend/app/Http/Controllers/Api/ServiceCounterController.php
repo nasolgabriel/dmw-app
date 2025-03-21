@@ -141,7 +141,7 @@ public function getByCounterNumber($counterNumber)
     return response()->json($counter);
 }
 
-/*public function getCounterStatistics()
+public function getCounterStatistics()
 {
     $stats = [
         'total_counters' => ServiceCounter::count(),
@@ -162,11 +162,70 @@ public function getByCounterNumber($counterNumber)
     
     return response()->json($stats);
 }
-/*public function getAvailableCounters()
+public function getAvailableCounters()
 {
     $counters = ServiceCounter::where('status', 'active')->get();
     return response()->json($counters);
 }
+
+public function linkUserToCounter(Request $request, $counterId)
+{
+    $counter = ServiceCounter::findOrFail($counterId);
     
-}*/
+    // Set the counter as active and link it to the authenticated user
+    $counter->status = 'active';
+    $counter->user_id = auth()->id();
+    $counter->save();
+    
+    return response()->json([
+        'message' => 'Counter linked to user and activated',
+        'counter' => $counter
+    ]);
+}
+
+public function unlinkUserFromCounter(Request $request, $counterId = null)
+{
+    if ($counterId) {
+        // Unlink specific counter
+        $counter = ServiceCounter::findOrFail($counterId);
+        
+        // Only allow unlinking if the counter belongs to the authenticated user
+        if ($counter->user_id == auth()->id()) {
+            $counter->status = 'inactive';
+            $counter->user_id = null;
+            $counter->save();
+            
+            return response()->json([
+                'message' => 'Counter unlinked from user and deactivated',
+                'counter' => $counter
+            ]);
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+    } else {
+        // Unlink all counters for the authenticated user
+        ServiceCounter::where('user_id', auth()->id())
+            ->update([
+                'status' => 'inactive',
+                'user_id' => null
+            ]);
+            
+        return response()->json([
+            'message' => 'All counters unlinked from user and deactivated'
+        ]);
+    }
+}
+
+public function getUserCounter()
+{
+    $counter = ServiceCounter::where('user_id', auth()->id())->first();
+    
+    if ($counter) {
+        return response()->json($counter);
+    } else {
+        return response()->json(['message' => 'No counter assigned to this user'], 404);
+    }
+}
+
+    
 }
