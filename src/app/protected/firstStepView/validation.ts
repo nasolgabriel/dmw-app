@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 // Regex patterns
 const phoneRegex = /^(\+?\d{1,3}|0)[\s-]?\d{9,10}$/;
-const passportRegex = /^(?:\d{9}|[A-Z]\d{7}|[A-Z]{2}\d{6})$/;
+const passportRegex = /^[A-Z]\d{7}[A-Z]$/;
 
 export const clientInfoSchema = yup.object().shape({
   transactionType: yup
