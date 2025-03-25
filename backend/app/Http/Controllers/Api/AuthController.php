@@ -27,33 +27,39 @@ class AuthController extends Controller
                 $token = $user->createToken('auth_token')->plainTextToken;
             }
             
-            // If the user has an assigned counter_id, activate that counter
+            // Handle counter activation and assignment
             if ($user->counter_id) {
                 $counter = ServiceCounter::find($user->counter_id);
                 if ($counter) {
-                    // Set the counter to active and associate with user
                     $counter->status = 'active';
                     $counter->user_id = $user->id;
                     $counter->save();
                 }
-            }
-            // If counter_id was provided in the request, override the default counter
-            elseif ($request->has('counter_id')) {
+            } elseif ($request->has('counter_id')) {
                 $counter = ServiceCounter::findOrFail($request->counter_id);
                 $counter->status = 'active';
                 $counter->user_id = $user->id;
                 $counter->save();
                 
-                // Update the user's default counter
+                // Update user's default counter
                 $user->counter_id = $counter->id;
                 $user->save();
             }
             
-            return response()->json([
+            // Prepare the response data
+            $responseData = [
                 'user' => $user,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-            ]);
+                'role' => 'windows',
+            ];
+            
+            // Add role if counter_id is null
+            if (is_null($user->counter_id)) {
+                $responseData['role'] = 'firststep';
+            }
+            
+            return response()->json($responseData);
         }
         
         return response()->json(['message' => 'Invalid credentials'], 401);
