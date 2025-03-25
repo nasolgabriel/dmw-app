@@ -8,6 +8,7 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class QueueController extends Controller
 {
@@ -26,23 +27,31 @@ class QueueController extends Controller
         ]);
     }
 
-    /**
-     * Display active queue entries (not completed or cancelled).
+     /**
+     * Display active queue entries (not completed or cancelled), sorted by priority.
      *
      * @return JsonResponse
      */
     public function activeQueue(): JsonResponse
-    {
-        $activeQueue = Queue::with('client')
-            ->whereIn('status', ['waiting', 'processing'])
-            ->orderBy('created_at', 'asc')
-            ->get();
-        
-        return response()->json([
-            'success' => true,
-            'data' => $activeQueue
-        ]);
-    }
+{
+    $activeQueue = Queue::with('client')
+        ->join('clients', 'queues.client_id', '=', 'clients.id')
+        ->whereIn('queues.status', ['in queue', 'processing'])
+        ->orderBy('clients.priority', 'desc') // Priority clients first
+        ->orderBy('queues.created_at', 'asc') // Then by creation time
+        ->select('queues.*')
+        ->get()
+        ->map(function ($queue) {
+            // Convert to local time
+            $queue->created_at = Carbon::parse($queue->created_at)->setTimezone('Asia/Manila')->toDateTimeString();
+            return $queue;
+        });
+
+    return response()->json([
+        'success' => true,
+        'data' => $activeQueue
+    ]);
+}
 
     /**
      * Store a new queue entry manually.
@@ -55,7 +64,7 @@ class QueueController extends Controller
         $validator = Validator::make($request->all(), [
             'client_id' => 'required|exists:clients,id',
             'service_id' => 'nullable|exists:services,id',
-            'status' => 'required|string|in:waiting,processing,completed,cancelled'
+            'status' => 'required|string|in:in queue,processing,completed,cancelled'
         ]);
 
         if ($validator->fails()) {
@@ -65,9 +74,10 @@ class QueueController extends Controller
             ], 422);
         }
 
-        // Generate ticket number
-        $ticketNumber = 'T' . date('Ymd') . '-' . str_pad((Queue::count() + 1), 3, '0', STR_PAD_LEFT);
-        
+        // Generate ticket number as a 3-digit sequential number resetting daily
+        $clientCountToday = Queue::whereDate('created_at', date('Y-m-d'))->count() + 1;
+        $ticketNumber = str_pad($clientCountToday, 3, '0', STR_PAD_LEFT);
+
         $queueEntry = Queue::create([
             'ticket_number' => $ticketNumber,
             'client_id' => $request->client_id,
@@ -131,7 +141,7 @@ class QueueController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:waiting,processing,completed,cancelled'
+            'status' => 'required|string|in:in queue,processing,completed,cancelled'
         ]);
 
         if ($validator->fails()) {
@@ -186,16 +196,31 @@ class QueueController extends Controller
     }
 
     /**
-     * Get the next client in the queue.
+     * Get the next client in the queue, prioritizing clients with priority flag.
      *
      * @return JsonResponse
      */
     public function nextInQueue(): JsonResponse
     {
+        // First check for priority clients
         $nextInQueue = Queue::with('client')
-            ->where('status', 'waiting')
-            ->orderBy('created_at', 'asc')
+            ->join('clients', 'queues.client_id', '=', 'clients.id')
+            ->where('queues.status', 'waiting')
+            ->where('clients.priority', true)
+            ->orderBy('queues.created_at', 'asc')
+            ->select('queues.*')
             ->first();
+        
+        // If no priority clients, get the next regular client
+        if (!$nextInQueue) {
+            $nextInQueue = Queue::with('client')
+                ->join('clients', 'queues.client_id', '=', 'clients.id')
+                ->where('queues.status', 'waiting')
+                ->where('clients.priority', false)
+                ->orderBy('queues.created_at', 'asc')
+                ->select('queues.*')
+                ->first();
+        }
         
         if (!$nextInQueue) {
             return response()->json([
@@ -211,7 +236,7 @@ class QueueController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Next client in queue retrieved',
-            'data' => $nextInQueue
+            'data' => $nextInQueue->load('client')
         ]);
     }
 }

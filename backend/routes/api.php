@@ -5,18 +5,42 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\API\ClientController;
 use App\Http\Controllers\API\QueueController;
+use App\Http\Controllers\API\ServiceController;
+use App\Http\Controllers\API\ServiceCounterController;
+use App\Http\Controllers\UserController;
 
-
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+// Authenticated user route
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+});
+    Route::post('/user/default-counter', [UserController::class, 'updateDefaultCounter']);
 });
 
-
+// Auth Routes
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout'])
-        ->middleware('auth:api');
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('/service-counters/{id}/link', [ServiceCounterController::class, 'linkUserToCounter']);
+    Route::post('/service-counters/{id?}/unlink', [ServiceCounterController::class, 'unlinkUserFromCounter']);
+    Route::get('/service-counters/user', [ServiceCounterController::class, 'getUserCounter']);
 });
+
+
+// Service routes - CRUD operations for services
+Route::apiResource('services', ServiceController::class);
+
+/// Custom routes for specific functionalities
+Route::get('/counters/available', [ServiceCounterController::class, 'getAvailableCounters']);
+Route::get('counters/service/{serviceId}', [ServiceCounterController::class, 'getCountersByService']);
+Route::put('counters/{id}/status', [ServiceCounterController::class, 'updateStatus']);
+Route::put('counters/{id}/assign-staff', [ServiceCounterController::class, 'assignStaff']);
+Route::get('counters/number/{counterNumber}', [ServiceCounterController::class, 'getByCounterNumber']);
+Route::get('counters/stats', [ServiceCounterController::class, 'getCounterStatistics']);
+
+// Service Counter routes - CRUD operations for counters
+Route::apiResource('counters', ServiceCounterController::class);
+
 // Client Routes
 Route::prefix('clients')->group(function () {
     Route::get('/', [ClientController::class, 'index']);
@@ -37,3 +61,5 @@ Route::prefix('queues')->group(function () {
     Route::delete('/{id}', [QueueController::class, 'destroy']);
     Route::get('/next', [QueueController::class, 'nextInQueue']);
 });
+
+
