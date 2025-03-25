@@ -56,14 +56,24 @@ const LoginPageBlock: React.FC = () => {
   const handleLogin = async () => {
     try {
       const response = await executeLogin({ username, password });
-      if (response.success) {
+      if (response.access_token) {
         setLoginErrors({});
         localStorage.setItem("access_token", response.access_token);
+        localStorage.setItem("role", response.role);
+
         if (!rememberMe || !rememberPassword) {
           localStorage.removeItem("rememberedUser");
           localStorage.removeItem("rememberedPassword");
         }
-        navigate("/window-view");
+
+        // Navigate based on user role
+        if (response.role === "firststep") {
+          navigate("/first-step-view");
+        } else if (response.role === "windows") {
+          navigate("/window-view");
+        } else {
+          navigate("/window-view");
+        }
       } else {
         setLoginErrors({
           username: "Invalid username or password.",

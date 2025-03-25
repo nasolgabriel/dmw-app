@@ -14,16 +14,14 @@ interface FirstStepViewProps {
     setAge: React.Dispatch<React.SetStateAction<number | null>>;
   };
   windowTitle: string;
+  handleLogout: () => void;
 }
 
 const FirstStepView: React.FC<FirstStepViewProps> = ({
   formProps,
   windowTitle,
+  handleLogout,
 }) => {
-  const handleLogout = () => {
-    console.log("Logout clicked");
-  };
-
   return (
     <div className="w-screen h-screen flex flex-col">
       <HeaderBar />

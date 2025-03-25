@@ -4,7 +4,7 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponse {
-  success: boolean;
+  role: string;
   message: string;
   access_token: string;
   errors?: {
