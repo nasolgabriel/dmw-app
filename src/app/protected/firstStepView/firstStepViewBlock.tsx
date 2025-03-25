@@ -4,10 +4,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ClientInfoFormData, clientInfoSchema } from "./validation";
 import calculateAge from "@/hooks/useCalculateAge";
+import { useNavigate } from "react-router-dom";
 
 const FirstStepViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("FIRST STEP");
   const [age, setAge] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   // Initialize form using react-hook-form directly
   const {
@@ -60,16 +62,17 @@ const FirstStepViewBlock: React.FC = () => {
   // Form submission handler
   const onSubmit = (data: ClientInfoFormData) => {
     console.log("Form submitted:", data);
-    
+
     // Transform the data to match the backend format
     const backendFormattedData = {
       firstname: data.firstName,
       middlename: data.middleName,
       lastname: data.surname,
       contact: data.phoneNumber,
-      purpose: Array.isArray(data.transactionType) && data.transactionType.length > 0 
-        ? data.transactionType[0] // Just use the first item if we only allow one selection
-        : "", 
+      purpose:
+        Array.isArray(data.transactionType) && data.transactionType.length > 0
+          ? data.transactionType[0] // Just use the first item if we only allow one selection
+          : "",
       age: age,
       sex: data.sex.toLowerCase(),
       status: "in queue",
@@ -77,17 +80,25 @@ const FirstStepViewBlock: React.FC = () => {
       address: data.address,
       email: data.email,
       priority: data.priority,
-      birthday: data.birthdate ? new Date(data.birthdate).toISOString().split('T')[0] : null
+      birthday: data.birthdate
+        ? new Date(data.birthdate).toISOString().split("T")[0]
+        : null,
     };
-    
+
     console.log("Backend formatted data:", backendFormattedData);
-    
+
     // Add API call or data processing logic here
   };
 
   const resetForm = () => {
     reset();
     setAge(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+    navigate("/");
   };
 
   return (
@@ -101,6 +112,7 @@ const FirstStepViewBlock: React.FC = () => {
         setAge,
       }}
       windowTitle={windowTitle}
+      handleLogout={handleLogout}
     />
   );
 };
