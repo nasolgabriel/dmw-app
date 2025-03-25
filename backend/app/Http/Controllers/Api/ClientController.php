@@ -9,66 +9,57 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
-{ /**
-    * Display a listing of the clients.
-    *
-    * @return JsonResponse
-    */
-   public function index(): JsonResponse
-   {
-       $clients = Client::all();
-       
-       return response()->json([
-           'success' => true,
-           'data' => $clients
-       ]);
-   }
-    
+{
+    /**
+     * Display a listing of the clients.
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
+    {
+        $clients = Client::all();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $clients
+        ]);
+    }
+
     /**
      * Store a newly created client in storage.
      *
      * @param Request $request
      * @return JsonResponse
      */
-    /**
- * Store a newly created client in storage.
- *
- * @param Request $request
- * @return JsonResponse
- */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'firstName' => 'required|string|max:255',
-            'middleName' => 'nullable|string|max:255',
-            'lastName' => 'required|string|max:255',
-            'contact' => 'required|string|max:20',
+            'name' => 'required|string|max:255',
+            'contact' => 'required|string|max:255',
+            'email' => 'required|email|max:255',          // Added
+            'passport_number' => 'required|string|max:50', // Added (adjust max length)
+            'address' => 'required|string|max:500',       // Added
             'purpose' => 'required|string|max:255',
-            'priority' => 'boolean',
-            'age' => 'integer',
-            'birthday' => 'date',
-            'sex' => 'string|in:male,female,other',
-            'status' => 'string|in:waiting,in queue,served,cancelled',
-            'passport_number' => 'nullable|string|max:255',
-            'email' => 'nullable|string|email|max:255',
-            'address' => 'nullable|string|max:255'
-        ]);
+            'age' => 'required|integer',
+            'sex' => 'required|string|in:male,female,other',
+            'status' => 'required|string|in:waiting,in queue,served,cancelled'
+        ]); 
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $client = Client::create($validator->validated());
+
         return response()->json([
-            'success' => false,
-            'errors' => $validator->errors()
-        ], 422);
+            'success' => true,
+            'message' => 'Client created successfully',
+            'data' => $client
+        ], 201);
     }
-
-    $client = Client::create($validator->validated());
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Client created successfully',
-        'data' => $client
-    ], 201);
-}
 
     /**
      * Display the specified client.
@@ -92,6 +83,7 @@ class ClientController extends Controller
             'data' => $client
         ]);
     }
+
     /**
      * Update the specified client in storage.
      *
@@ -111,19 +103,12 @@ class ClientController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'firstName' => 'sometimes|string|max:255',
-            'middleName' => 'sometimes|nullable|string|max:255',
-            'lastName' => 'sometimes|string|max:255',
-            'contact' => 'required|string|max:20',
+            'name' => 'sometimes|string|max:255',
+            'contact' => 'sometimes|string|max:255',
             'purpose' => 'sometimes|string|max:255',
-            'priority' => 'sometimes|boolean',
             'age' => 'sometimes|integer',
-            'birthday' => 'sometimes|date',
             'sex' => 'sometimes|string|in:male,female,other',
-            'status' => 'sometimes|string|in:waiting,in queue,served,cancelled',
-            'passport_number' => 'sometimes|nullable|string|max:255',
-            'email' => 'sometimes|nullable|string|email|max:255',
-            'address' => 'sometimes|nullable|string|max:255'
+            'status' => 'sometimes|string|in:waiting,in queue,served,cancelled'
         ]);
 
         if ($validator->fails()) {

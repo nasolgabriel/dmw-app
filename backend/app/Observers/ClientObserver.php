@@ -37,17 +37,20 @@ class ClientObserver
     // Get the count of today's queue entries and add 1 for the new ticket
     $clientCountToday = Queue::whereDate('created_at', date('Y-m-d'))->count() + 1;
 
-    // Generate the ticket number as a 3-digit format (e.g., 001, 002, 003)
-    $ticketNumber = str_pad($clientCountToday, 3, '0', STR_PAD_LEFT);
+    // Use the client's purpose (only the first 2 characters in uppercase)
+    $purpose = strtoupper(substr($client->purpose, 0, 2));
+
+    // Generate the ticket number in the format: [Purpose][DailyCount padded to 3 digits]
+    // For example, if the purpose is "DH" and it's the first ticket of the day, you'll get "DH001"
+    $ticketNumber = $purpose . str_pad($clientCountToday, 3, '0', STR_PAD_LEFT);
 
     // Create a new queue entry
     Queue::create([
         'ticket_number' => $ticketNumber,
         'client_id' => $client->id,
-        'counter_id' => null, // Default value or get from somewhere
-        'status' => 'in queue'
+        'service_id' => null, // Determine this based on client's purpose if needed
+        'status' => 'in queue',
     ]);
 }
-
 
 }
