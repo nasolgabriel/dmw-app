@@ -6,7 +6,7 @@ use App\Models\ServiceCounter;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Models\Queue;
 class ServiceCounterController extends Controller
 {
     
@@ -225,6 +225,86 @@ public function getUserCounter()
     } else {
         return response()->json(['message' => 'No counter assigned to this user'], 404);
     }
+}
+/**
+ * Get the next ticket from the queue for a specific counter
+ *
+ * @param Request $request
+ * @param int $counterId
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function getNextTicket(Request $request, $counterId)
+{
+    // Find the counter
+    $counter = ServiceCounter::with('service')->findOrFail($counterId);
+    
+    // Get the service associated with this counter
+    $serviceId = $counter->service_id;
+    
+    // Find the next ticket in the queue for this service
+    // Assuming you have a Queue or Ticket model
+    $nextTicket = Queue::where('service_id', $serviceId)
+                      ->where('status', 'waiting')
+                      ->orderBy('created_at', 'asc')
+                      ->first();
+    
+    if (!$nextTicket) {
+        return response()->json([
+            'message' => 'No tickets in queue for this service',
+            'counter' => $counter
+        ], 404);
+    }
+    
+    // Update the ticket status to 'processing' and assign it to this counter
+    $nextTicket->status = 'processing';
+    $nextTicket->counter_id = $counterId;
+    $nextTicket->called_at = now();
+    $nextTicket->save();
+    
+    // You could also update the counter status if needed
+    // $counter->status = 'busy';
+    // $counter->save();
+    
+    return response()->json([
+        'message' => 'Ticket assigned to counter',
+        'ticket' => $nextTicket,
+        'counter' => $counter
+    ]);
+}
+
+public function pickTicket(Request $request, $counterId, $ticketId)
+{
+    // Validate the counter ID
+    $counter = ServiceCounter::find($counterId);
+    if (!$counter) {
+        return response()->json([
+            'message' => 'Counter not found'
+        ], 404);
+    }
+
+    // Find the specified ticket in the queue
+    $ticket = Queue::where('id', $ticketId)
+                   ->where('status', 'in queue')
+                   ->first();
+
+    if (!$ticket) {
+        return response()->json([
+            'message' => 'Ticket not found or not in queue status',
+            'counter' => $counter
+        ], 404);
+    }
+
+    // Update the ticket status to 'processing' and assign it to this counter
+    $ticket->status = 'processing';
+    $ticket->counter_id = $counterId;
+    $ticket->called_at = now();
+    $ticket->save();
+
+    return response()->json([
+        'message' => 'Ticket assigned to counter',
+        'ticket' => $ticket,
+        'counter' => $counter
+    ]);
 }
 
     

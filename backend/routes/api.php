@@ -9,28 +9,29 @@ use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\ServiceCounterController;
 use App\Http\Controllers\UserController;
 
-// Authenticated user route
-Route::middleware(['auth:sanctum'])->group(function () {
+// Authenticated user routes
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
-});
+    });
     Route::post('/user/default-counter', [UserController::class, 'updateDefaultCounter']);
+    Route::post('/service-counters/{id}/next-ticket', [ServiceCounterController::class, 'getNextTicket']);
+    Route::post('/counters/{counterId}/pick-ticket/{ticketId}', [ServiceCounterController::class, 'pickTicket']);
 });
 
 // Auth Routes
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/service-counters/{id}/link', [ServiceCounterController::class, 'linkUserToCounter']);
     Route::post('/service-counters/{id?}/unlink', [ServiceCounterController::class, 'unlinkUserFromCounter']);
     Route::get('/service-counters/user', [ServiceCounterController::class, 'getUserCounter']);
 });
 
-
 // Service routes - CRUD operations for services
 Route::apiResource('services', ServiceController::class);
 
-/// Custom routes for specific functionalities
+// Custom routes for specific functionalities
 Route::get('/counters/available', [ServiceCounterController::class, 'getAvailableCounters']);
 Route::get('counters/service/{serviceId}', [ServiceCounterController::class, 'getCountersByService']);
 Route::put('counters/{id}/status', [ServiceCounterController::class, 'updateStatus']);
@@ -61,5 +62,4 @@ Route::prefix('queues')->group(function () {
     Route::delete('/{id}', [QueueController::class, 'destroy']);
     Route::get('/next', [QueueController::class, 'nextInQueue']);
 });
-
 
