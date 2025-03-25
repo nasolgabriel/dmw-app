@@ -7,79 +7,73 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Models\ServiceCounter; // Ensure this model is imported
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'username' => 'required|string',
-            'password' => 'required'
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|exists:users,username',
+            'password' => 'required|string|min:6'
         ]);
-        
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            
-            // Generate token if using Sanctum
-            $token = null;
-            if (method_exists($user, 'createToken')) {
-                $token = $user->createToken('auth_token')->plainTextToken;
-            }
-            
-            // If the user has an assigned counter_id, activate that counter
-            if ($user->counter_id) {
-                $counter = ServiceCounter::find($user->counter_id);
-                if ($counter) {
-                    // Set the counter to active and associate with user
-                    $counter->status = 'active';
-                    $counter->user_id = $user->id;
-                    $counter->save();
-                }
-            }
-            // If counter_id was provided in the request, override the default counter
-            elseif ($request->has('counter_id')) {
-                $counter = ServiceCounter::findOrFail($request->counter_id);
-                $counter->status = 'active';
-                $counter->user_id = $user->id;
-                $counter->save();
-                
-                // Update the user's default counter
-                $user->counter_id = $counter->id;
-                $user->save();
-            }
-            
+
+        // Check validation fails
+        if ($validator->fails()) {
             return response()->json([
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ]);
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
         }
-        
-        return response()->json(['message' => 'Invalid credentials'], 401);
+
+        // Attempt login
+        $credentials = $request->only(['username', 'password']);
+
+        try {
+            // Attempt to verify the credentials and create a token
+            if (!$token = Auth::guard('api')->attempt($credentials)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Credentials'
+                ], 401);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not create token',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        // Get the authenticated user
+        $user = Auth::guard('api')->user();
+
+        // Return successful response with token
+        return response()->json([
+            'success' => true,
+            'message' => 'Login Successful',
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'email' => $user->email
+                ],
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => Auth::guard('api')->factory()->getTTL() * 60
+            ]
+        ]);
     }
-    
-    public function logout(Request $request)
+
+    public function logout()
     {
         try {
-            $user = $request->user();
-            
-            // Deactivate the counter if it's active
-            if ($user->counter_id) {
-                ServiceCounter::where('id', $user->counter_id)
-                    ->where('user_id', $user->id)
-                    ->update([
-                        'status' => 'inactive',
-                        'user_id' => null
-                    ]);
-            }
-            
-            // Revoke token if using Sanctum
-            if (method_exists($user, 'currentAccessToken')) {
-                $user->currentAccessToken()->delete();
-            }
-            
-            return response()->json(['message' => 'Successfully logged out']);
+            Auth::guard('api')->logout();
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully logged out'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

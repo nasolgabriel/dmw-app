@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // Add this import
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable; // Add HasApiTokens here
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -61,12 +61,4 @@ class User extends Authenticatable
     {
         return [];
     }
-    public function serviceCounter()
-{
-    return $this->hasOne(ServiceCounter::class);
-}
-public function counter()
-{
-    return $this->belongsTo(ServiceCounter::class);
-}
 }
