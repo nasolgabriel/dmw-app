@@ -5,9 +5,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ClientInfoFormData, clientInfoSchema } from "./validation";
 import calculateAge from "@/hooks/useCalculateAge";
 import { useNavigate } from "react-router-dom";
+import { clearLoginInfo, getLoginInfo } from "@/utils/loginInfo";
 
 const FirstStepViewBlock: React.FC = () => {
-  const [windowTitle, setWindowTitle] = useState("FIRST STEP");
+  const [windowTitle, setWindowTitle] = useState(
+    getLoginInfo().windowTitle.toUpperCase()
+  );
   const [age, setAge] = useState<number | null>(null);
   const navigate = useNavigate();
 
@@ -96,8 +99,7 @@ const FirstStepViewBlock: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
+    clearLoginInfo();
     navigate("/");
   };
 

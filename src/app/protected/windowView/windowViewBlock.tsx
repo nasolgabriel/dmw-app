@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { useNavigate } from "react-router-dom";
 import WindowView from "./windowView";
+import { clearLoginInfo, getLoginInfo } from "@/utils/loginInfo";
 
 const WindowViewBlock: React.FC = () => {
-  const [windowTitle, setWindowTitle] = useState("WINDOW 1");
+  const [windowTitle, setWindowTitle] = useState(
+    getLoginInfo().windowTitle.toUpperCase()
+  );
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
+    clearLoginInfo();
     navigate("/");
   };
 

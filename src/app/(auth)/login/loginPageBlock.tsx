@@ -6,6 +6,7 @@ import { useApiCallback } from "@/hooks/useApi";
 import { LoginCredentials, LoginResponse } from "@/types/auth";
 import { loginApi } from "@/api/authApi";
 import { useNavigate } from "react-router-dom";
+import { setLoginInfo } from "@/utils/loginInfo";
 
 interface LoginErrors {
   username?: string;
@@ -58,15 +59,18 @@ const LoginPageBlock: React.FC = () => {
       const response = await executeLogin({ username, password });
       if (response.access_token) {
         setLoginErrors({});
-        localStorage.setItem("access_token", response.access_token);
-        localStorage.setItem("role", response.role);
+        setLoginInfo({
+          accessToken: response.access_token,
+          role: response.role,
+          counterId: response.user.counter_id,
+          windowTitle: response.user.name,
+        });
 
         if (!rememberMe || !rememberPassword) {
           localStorage.removeItem("rememberedUser");
           localStorage.removeItem("rememberedPassword");
         }
 
-        // Navigate based on user role
         if (response.role === "firststep") {
           navigate("/first-step-view");
         } else if (response.role === "windows") {
