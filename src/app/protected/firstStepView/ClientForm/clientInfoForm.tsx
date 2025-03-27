@@ -46,7 +46,7 @@ const getFieldStyles = () => {
         backgroundColor: "white",
         height: {
           md: "2rem",
-          xl: "2.5rem",
+          xl: "2.2rem",
         },
         "& fieldset": {
           borderWidth: borderThickness,
@@ -62,7 +62,7 @@ const getFieldStyles = () => {
         "& .MuiInputBase-input": {
           fontSize: {
             md: "0.85rem",
-            xl: "1rem",
+            xl: "0.9rem",
           },
           fontWeight: 550,
         },
@@ -103,7 +103,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-[80%] bg-[#e9e9e9] my-5 mr-10 rounded-3xl flex flex-col md:w-[90%] lg:px-10"
+      className="w-[80%] bg-[#e9e9e9] mr-10 rounded-2xl flex flex-col md:w-[90%] lg:px-5"
     >
       <Typography
         variant="h1"
@@ -111,8 +111,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
           fontWeight: "bold",
           fontSize: {
             md: "1rem",
-            lg: "2rem",
-            xl: "2.5rem",
+            xl: "2rem",
           },
           paddingTop: "2rem",
           paddingLeft: "2rem",
@@ -130,7 +129,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
             fontSize: {
               md: "0.8rem",
               lg: "1rem",
-              xl: "1.5rem",
+              xl: "1.4rem",
             },
             paddingTop: ".5rem",
           }}
@@ -240,6 +239,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                         fontWeight: 550,
                       },
                       paddingBottom: "0.8rem",
+                      minWidth: "70px",
                     }}
                     error={!!errors.suffix}
                     helperText={errors.suffix?.message}
@@ -308,7 +308,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                   backgroundColor: "white",
                   height: {
                     md: "2rem",
-                    xl: "2.5rem",
+                    xl: "2.2rem",
                   },
                   "& fieldset": {
                     borderWidth: 0,
@@ -364,7 +364,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
             fontSize: {
               md: "0.8rem",
               lg: "1rem",
-              xl: "1.5rem",
+              xl: "1.4rem",
             },
             paddingTop: "1rem",
           }}
@@ -503,7 +503,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
           color="success"
           type="submit"
           sx={{
-            fontSize: { md: "1rem", xl: "1.3rem" },
+            fontSize: { md: "0.8rem", xl: "1rem" },
             fontWeight: "bold",
             padding: { md: ".5rem 1.5rem", xl: ".5rem 2rem" },
           }}

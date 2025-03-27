@@ -1,6 +1,45 @@
 import { Typography, Button, Box, styled } from "@mui/material";
 
 const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
+  const TransferButton = styled(Button, {
+    shouldForwardProp: (prop) => prop !== "isMobile",
+  })(({ theme }) => ({
+    color: "white",
+    fontSize: theme.typography.pxToRem(14),
+    [theme.breakpoints.up("md")]: {
+      fontSize: theme.typography.pxToRem(18),
+    },
+    backgroundColor: "#0038A8",
+    fontWeight: theme.typography.fontWeightBold,
+    width: "100%",
+    transition: theme.transitions.create("background-color", {
+      duration: theme.transitions.duration.short,
+    }),
+    "&:hover": {
+      backgroundColor: "#00257A",
+    },
+    padding: theme.spacing(2),
+  }));
+
+  const buttonGroups = [
+    {
+      buttons: [
+        "PROTECTION DIVISION (windows 1-3)",
+        "PROCESSING DIVISION (windows 4-7)",
+        "WRSD windows (8-10)",
+      ],
+    },
+    {
+      buttons: ["PAG-IBIG", "OWWA", "CASHIER"],
+      row: true,
+    },
+  ];
+
+  const handleTransferButton = () => {
+    // TODO: Implement transfer logic and API integration
+    onClose();
+  };
+
   return (
     <Box
       sx={{
@@ -37,7 +76,7 @@ const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
             }}
           >
             {group.buttons.map((text, btnIndex) => (
-              <TransferButton key={btnIndex}>{text}</TransferButton>
+              <TransferButton key={btnIndex} onClick={handleTransferButton}>{text}</TransferButton>
             ))}
           </Box>
         ))}
@@ -56,39 +95,5 @@ const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
     </Box>
   );
 };
-
-const TransferButton = styled(Button, {
-  shouldForwardProp: (prop) => prop !== "isMobile",
-})(({ theme }) => ({
-  color: "white",
-  fontSize: theme.typography.pxToRem(14),
-  [theme.breakpoints.up("md")]: {
-    fontSize: theme.typography.pxToRem(18),
-  },
-  backgroundColor: "#0038A8",
-  fontWeight: theme.typography.fontWeightBold,
-  width: "100%",
-  transition: theme.transitions.create("background-color", {
-    duration: theme.transitions.duration.short,
-  }),
-  "&:hover": {
-    backgroundColor: "#00257A",
-  },
-  padding: theme.spacing(2),
-}));
-
-const buttonGroups = [
-  {
-    buttons: [
-      "PROTECTION DIVISION (windows 1-3)",
-      "PROCESSING DIVISION (windows 4-7)",
-      "WRSD windows (8-10)",
-    ],
-  },
-  {
-    buttons: ["PAG-IBIG", "OWWA", "CASHIER"],
-    row: true,
-  },
-];
 
 export default ClientTransferModal;
