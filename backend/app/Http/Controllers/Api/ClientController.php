@@ -36,6 +36,12 @@ class ClientController extends Controller
  * @param Request $request
  * @return JsonResponse
  */
+      /**
+     * Store a newly created client in storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -48,27 +54,31 @@ class ClientController extends Controller
             'age' => 'integer',
             'birthday' => 'date',
             'sex' => 'string|in:male,female,other',
-            'status' => 'string|in:waiting,in queue,served,cancelled',
             'passport_number' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255',
-            'address' => 'nullable|string|max:255'
+            'address' => 'nullable|string|max:255',
+            // Remove status validation to allow default
         ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Merge default status 'in queue'
+        $clientData = $validator->validated();
+        $clientData['status'] = 'in queue';
+
+        $client = Client::create($clientData);
+
         return response()->json([
-            'success' => false,
-            'errors' => $validator->errors()
-        ], 422);
+            'success' => true,
+            'message' => 'Client created successfully',
+            'data' => $client
+        ], 201);
     }
-
-    $client = Client::create($validator->validated());
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Client created successfully',
-        'data' => $client
-    ], 201);
-}
 
     /**
      * Display the specified client.

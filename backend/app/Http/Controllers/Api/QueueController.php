@@ -9,15 +9,34 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-
+use App\Models\Service;
 class QueueController extends Controller
 {
+    public function getDivisions(): JsonResponse
+{
+    // Fetch services with detailed queue information
+$divisions = Service::select('id', 'description', 'abbreviation')
+->with(['queues' => function ($query) {
+    $query->whereIn('status', ['in queue', 'processing'])
+          ->with(['client' => function($query) {
+              $query->select('id', 'firstName', 'middleName', 'lastName');
+          }]) 
+          ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id');
+}])
+->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $divisions
+    ]);
+}
     /**
      * Display a listing of queue entries.
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function 
+    index(): JsonResponse
     {
         $queueEntries = Queue::with('client')->get();
         
@@ -105,14 +124,42 @@ class QueueController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show(int $id): JsonResponse
+  /**
+     * Display the specified queue entry.
+     *
+     * @param string|int $id
+     * @return JsonResponse
+     */
+    public function show($id): JsonResponse
     {
-        $queueEntry = Queue::with('client')->find($id);
+       
+
+        // Try to find by ticket number first
+        $queueEntry = Queue::with(['client', 'service', 'counter'])
+            ->where('ticket_number', $id)
+            ->first();
+
+        // If not found by ticket number, try to find by ID
+        if (!$queueEntry) {
+            // Ensure $id is a valid integer
+            if (!is_numeric($id)) {
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid queue entry identifier',
+                    'received_id' => $id
+                ], 400);
+            }
+
+            $queueEntry = Queue::with(['client', 'service', 'counter'])
+                ->find((int)$id);
+        }
         
         if (!$queueEntry) {
             return response()->json([
                 'success' => false,
-                'message' => 'Queue entry not found'
+                'message' => 'Queue entry not found',
+                'received_id' => $id
             ], 404);
         }
 

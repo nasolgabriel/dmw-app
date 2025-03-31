@@ -20,4 +20,12 @@ class Service extends Model
     {
         return $this->hasMany(ServiceCounter::class);
     }
+
+    /**
+     * Get the queues for the service.
+     */
+    public function queues()
+    {
+        return $this->hasMany(Queue::class);
+    }
 }
