@@ -7,7 +7,7 @@ import calculateAge from "@/hooks/useCalculateAge";
 import { useNavigate } from "react-router-dom";
 import { useApiCallback } from "@/hooks/useApi";
 import { firstStepForm } from "@/types/firstStepForm";
-import { clientInfo } from "@/api/authApi";
+import { clientInfo, logoutApi } from "@/api/authApi";
 
 const FirstStepViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("FIRST STEP");
@@ -19,6 +19,10 @@ const FirstStepViewBlock: React.FC = () => {
       const response = await clientInfo(formData);
       return response;
     }
+  );
+
+  const { execute: executeLogout } = useApiCallback<string, [string]>(
+    logoutApi
   );
 
   // Initialize form using react-hook-form directly
@@ -77,31 +81,26 @@ const FirstStepViewBlock: React.FC = () => {
         middleName: data.middleName || null,
         lastName: data.surname,
         contact: data.phoneNumber,
-        purpose: Array.isArray(data.transactionType) 
-          ? data.transactionType.join(', ') 
-          : '',
+        purpose: Array.isArray(data.transactionType)
+          ? data.transactionType.join(", ")
+          : "",
         priority: data.priority,
         age: age || 0,
         birthday: data.birthdate
-        ? new Date(data.birthdate).toISOString().split("T")[0]
-        : null,
-        sex: data.sex.toLowerCase() as 'male' | 'female',
+          ? new Date(data.birthdate).toISOString().split("T")[0]
+          : null,
+        sex: data.sex.toLowerCase() as "male" | "female",
         passport_number: data.passportNumber || null,
         email: data.email || null,
         address: data.address || null,
       };
 
-      // birthday: data.birthdate
-      // ? new Date(data.birthdate).toISOString().split("T")[0]
-      // : null,
-
       // Execute the API call
       const result = await submitClientInfo(apiPayload);
-      
-      console.log('API response:', result);
-      
+
+      console.log("API response:", result);
     } catch (error) {
-      console.error('Submission failed:', error);
+      console.error("Submission failed:", error);
     }
   };
 
@@ -110,10 +109,16 @@ const FirstStepViewBlock: React.FC = () => {
     setAge(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await executeLogout("Successfully logged out.");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
