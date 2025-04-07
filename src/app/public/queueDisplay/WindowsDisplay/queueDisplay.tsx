@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import HeaderBar from "../../../components/headerBar/headerBar";
-import QueueCounters from "./WindowsDisplay/queueCounters";
+import HeaderBar from "../../../../components/headerBar/headerBar";
+import QueueCounters from "./queueCounters";
 
 interface QueueDisplayProps {
   cashierData: any;
