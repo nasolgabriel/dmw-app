@@ -1,16 +1,17 @@
 export const TRANSACTION_OPTIONS = [
-  { value: 'LA', label: 'LA – Legal Assistance' },
-  { value: 'BM', label: 'BM – Balik Manggagawa' },
-  { value: 'DH', label: 'DH – Direct Hire' },
-  { value: 'I', label: 'I – Infosheet' },
-  { value: 'A', label: 'A – Eregistration, OEC Assistance Etc.' },
-  { value: 'G', label: 'G – Government to Government' },
-  { value: 'FA', label: 'FA – Financial Assistance' },
-  { value: 'S', label: 'S – Shipment of Remains' },
-  { value: 'L', label: 'L - Livelihood' },
-  { value: 'PIF', label: 'PIF – Pag Ibig Fund' },
-  { value: 'O', label: 'O – OWWA' }
+  { value: 'Legal Assistance', label: 'LA – Legal Assistance' },
+  { value: 'Balik Manggagawa', label: 'BM – Balik Manggagawa' },
+  { value: 'Direct Hire', label: 'DH – Direct Hire' },
+  { value: 'Infosheet', label: 'I – Infosheet' },
+  { value: 'Eregistration, OEC Assistance Etc.', label: 'A – Eregistration, OEC Assistance Etc.' },
+  { value: 'Government to Government', label: 'G – Government to Government' },
+  { value: 'Financial Assistance', label: 'FA – Financial Assistance' },
+  { value: 'Shipment of Remains', label: 'S – Shipment of Remains' },
+  { value: 'Livelihood', label: 'L - Livelihood' },
+  { value: 'Pag Ibig Fund', label: 'PIF – Pag Ibig Fund' },
+  { value: 'OWWA', label: 'O – OWWA' }
 ];
+
 
 export const SEX_OPTIONS = [
   { value: 'male', label: 'Male' },

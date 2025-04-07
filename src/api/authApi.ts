@@ -1,11 +1,17 @@
-import axiosInstance from './axiosInstance';
-import { LoginCredentials, LoginResponse } from '../types/auth';
+import axiosInstance from "./axiosInstance";
+import { LoginCredentials, LoginResponse } from "../types/auth";
+import { firstStepForm } from "@/types/firstStepForm";
 
 export const loginApi = async (
-    credentials: LoginCredentials
-  ): Promise<LoginResponse> => {
-    const response = await axiosInstance.post('/auth/login', credentials);
-    return response.data;
-  };
+  credentials: LoginCredentials
+): Promise<LoginResponse> => {
+  const response = await axiosInstance.post("/auth/login", credentials);
+  return response.data;
+};
 
-  
+export const clientInfo = async (
+  clientinfo: firstStepForm
+): Promise<string> => {
+  const response = await axiosInstance.post("/clients", clientinfo);
+  return response.data;
+};
