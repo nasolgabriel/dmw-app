@@ -6,7 +6,7 @@ import LoginPageBlock from "@/app/(auth)/login/loginPageBlock";
 import WindowViewBlock from "./protected/windowView/windowViewBlock";
 import FirstStepViewBlock from "./protected/firstStepView/firstStepViewBlock";
 import ProtectedRoute from "@/components/protectedRoute/ProtectedRoute";
-import QueueDisplayBlock from "./public/queueDisplay/queueDisplayBlock";
+import QueueDisplayBlock from "./public/queueDisplay/WindowsDisplay/queueDisplayBlock";
 
 const AppRouter: React.FC = () => {
   return (
