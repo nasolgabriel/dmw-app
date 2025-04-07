@@ -15,3 +15,11 @@ export const clientInfo = async (
   const response = await axiosInstance.post("/clients", clientinfo);
   return response.data;
 };
+
+export const logoutApi = async (message: string): Promise<string> => {
+  const access_token = localStorage.getItem("access_token");
+  await axiosInstance.post("/auth/logout", {
+    access_token,
+  });
+  return message;
+};
