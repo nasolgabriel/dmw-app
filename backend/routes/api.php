@@ -62,4 +62,6 @@ Route::prefix('queues')->group(function () {
     Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
     Route::get('/next', [QueueController::class, 'nextInQueue']);
+    Route::post('/queues/{id}/transfer', [QueueController::class, 'transferToCounter']);
+
 });
