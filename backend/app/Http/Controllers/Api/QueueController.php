@@ -13,7 +13,7 @@ use App\Models\Service;
 use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
-    /**
+        /**
  * Transfer a queue ticket to another counter.
  *
  * @param Request $request

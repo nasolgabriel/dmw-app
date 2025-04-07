@@ -53,6 +53,7 @@ Route::prefix('clients')->group(function () {
 });
 
 Route::prefix('queues')->group(function () {
+    Route::post('/queues/{id}/transfer', [QueueController::class, 'transferToCounter']);
     Route::get('/', [QueueController::class, 'index']);
     Route::get('/active', [QueueController::class, 'activeQueue']);
     Route::post('/', [QueueController::class, 'store']);
@@ -62,6 +63,4 @@ Route::prefix('queues')->group(function () {
     Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
     Route::get('/next', [QueueController::class, 'nextInQueue']);
-    Route::post('/queues/{id}/transfer', [QueueController::class, 'transferToCounter']);
-
 });
