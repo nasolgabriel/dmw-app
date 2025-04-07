@@ -13,7 +13,6 @@ class Client extends Model
         'firstName',
         'middleName',
         'lastName',
-        'suffix',
         'contact',
         'purpose',
         'age',
@@ -23,6 +22,7 @@ class Client extends Model
         'passport_number',
         'email',
         'address'
+        
     ];
 
 
@@ -47,12 +47,11 @@ class Client extends Model
      * Get the client's full name.
      */
     public function getFullNameAttribute()
-{
-    return trim(
-        ($this->firstName ?? '') . ' ' . 
-        ($this->middleName ?? '') . ' ' . 
-        ($this->lastName ?? '') . ' ' .
-        ($this->suffix ? $this->suffix : '')
-    );
-}
+    {
+        return trim(
+            ($this->firstName ?? '') . ' ' . 
+            ($this->middleName ?? '') . ' ' . 
+            ($this->lastName ?? '')
+        );
+    }
 }
