@@ -10,8 +10,65 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\Service;
+use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
+    /**
+ * Transfer a queue ticket to another counter.
+ *
+ * @param Request $request
+ * @param int $id
+ * @return JsonResponse
+ */
+public function transferToCounter(Request $request, int $id): JsonResponse
+{
+    // Find the queue entry
+    $queueEntry = Queue::find($id);
+    
+    if (!$queueEntry) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Queue entry not found'
+        ], 404);
+    }
+    
+    // Validate the request
+    $validator = Validator::make($request->all(), [
+        'counter_id' => 'required|exists:service_counters,id',
+        'reason' => 'nullable|string|max:255',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors()
+        ], 422);
+    }
+    
+    // Get the target counter
+    $targetCounter = ServiceCounter::find($request->counter_id);
+    
+    // Validate if the counter can handle this service
+    if ($targetCounter->service_id != $queueEntry->service_id) {
+        // If the service is different, we need to update the service as well
+        $queueEntry->service_id = $targetCounter->service_id;
+    }
+    
+    // Update the counter assignment
+    $queueEntry->counter_id = $request->counter_id;
+    
+    // If there's a reason provided, we can store it in the queue entry if needed
+    // If you want to track transfer reasons, you might need to add a 'transfer_reason' column to your queues table
+    
+    // Save the changes
+    $queueEntry->save();
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Queue ticket transferred successfully',
+        'data' => $queueEntry->load(['client', 'service', 'counter'])
+    ]);
+}
     public function getDivisions(): JsonResponse
 {
     // Fetch services with detailed queue information
