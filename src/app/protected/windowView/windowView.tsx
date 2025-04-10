@@ -7,6 +7,7 @@ import { CustomTable } from "@/components/customTable/customTable";
 import HeaderBar from "@/components/headerBar/headerBar";
 import CustomModal from "@/components/modal/customModal";
 import ClientTransferModal from "./clientTransferModal";
+import { currentClientResponse } from "@/types/currentClient";
 
 interface WindowViewProps {
   windowTitle: string;
@@ -14,6 +15,9 @@ interface WindowViewProps {
   isModalOpen: boolean;
   setIsModalOpen: (isModalOpen: boolean) => void;
   columns: any[];
+  handleProceed: () => void;
+  handleDone: () => void;
+  clientData: any;
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -22,6 +26,9 @@ const WindowView: React.FC<WindowViewProps> = ({
   isModalOpen,
   setIsModalOpen,
   columns,
+  handleProceed,
+  handleDone,
+  clientData,
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -29,7 +36,9 @@ const WindowView: React.FC<WindowViewProps> = ({
       <div className="h-[90%] border-t-2 border-gray-500 flex">
         <div className="w-[50%] h-full pt-5">
           <div className="flex justify-end items-center w-[18rem] h-[5rem] font-bold bg-[#0038A8] rounded-r-[16px]">
-            <h1 className="mr-8 text-[1rem] xl:text-[2.5rem] text-white">{windowTitle}</h1>
+            <h1 className="mr-8 text-[1rem] xl:text-[2.5rem] text-white">
+              {windowTitle}
+            </h1>
           </div>
           <Container className="mt-5">
             <h1 className="mr-8 text-[1.5rem] font-semibold ml-5 text-[#ACACAC]">
@@ -76,6 +85,8 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:active": { bgcolor: "forestgreen" },
                   width: "fit-Container",
                 }}
+                onClick={handleProceed}
+                disabled={!!clientData}
               >
                 PROCEED
               </Button>
@@ -84,7 +95,7 @@ const WindowView: React.FC<WindowViewProps> = ({
         </div>
         <div className="w-[50%] h-full flex justify-start items-end flex-col">
           <div className="w-[80%] h-[100%] bg-[#F4F4F4] mt-5 mr-10 rounded-3xl flex flex-col justify-between">
-            <ClientCard clientData={mockOnProcessQueueData[0]} />
+            <ClientCard clientData={clientData} />
             {/* Action Buttons */}
             <div className="flex justify-end gap-5 mr-10 mb-10">
               <Button
@@ -113,6 +124,7 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:hover": { bgcolor: "darkgreen" },
                   "&:active": { bgcolor: "forestgreen" },
                 }}
+                onClick={handleDone}
               >
                 Done
               </Button>
