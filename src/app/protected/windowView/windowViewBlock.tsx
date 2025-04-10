@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
-import { logoutApi } from "@/api/authApi";
+import { getCurrentClient, logoutApi } from "@/api/authApi";
+import { currentClientResponse } from "@/types/currentClient";
 
 const WindowViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("WINDOW 1");
@@ -11,6 +12,25 @@ const WindowViewBlock: React.FC = () => {
   const { execute: executeLogout } = useApiCallback<string, [string]>(
     logoutApi
   );
+
+  const [tempClient] = useState("43");
+
+  const { execute: fetchClient, result: clientData } = useApiCallback<
+    currentClientResponse,
+    [string | number]
+  >(getCurrentClient);
+
+  const handleProceed = async () => {
+    try {
+      // Execute the API call with the client ID
+      await fetchClient(tempClient);
+      if (clientData) {
+        console.log("Client data:", clientData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch client:", error);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -45,6 +65,8 @@ const WindowViewBlock: React.FC = () => {
       isModalOpen={isModalOpen}
       setIsModalOpen={setIsModalOpen}
       columns={columns}
+      handleProceed={handleProceed}
+      clientData={clientData}
     />
   );
 };

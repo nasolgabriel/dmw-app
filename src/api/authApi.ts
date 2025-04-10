@@ -1,6 +1,7 @@
 import axiosInstance from "./axiosInstance";
 import { LoginCredentials, LoginResponse } from "../types/auth";
 import { firstStepForm } from "@/types/firstStepForm";
+import { currentClientResponse } from "@/types/currentClient";
 
 export const loginApi = async (
   credentials: LoginCredentials
@@ -23,3 +24,12 @@ export const logoutApi = async (message: string): Promise<string> => {
   });
   return message;
 };
+
+export const getCurrentClient = async (
+  id: string | number
+): Promise<currentClientResponse> => {
+  const response = await axiosInstance.get(`/clients/${id}`);
+  return response.data;
+};
+
+// export const getClientTable = async (): Promise<>

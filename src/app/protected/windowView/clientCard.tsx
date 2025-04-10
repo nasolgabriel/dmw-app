@@ -1,53 +1,69 @@
-import { OnProcessQueue } from "@/mocks";
+import { currentClientResponse } from "@/types/currentClient";
 
 interface ClientCardProps {
-  clientData: OnProcessQueue;
+  clientData?: currentClientResponse;
 }
 
 const ClientCard: React.FC<ClientCardProps> = ({ clientData }) => {
+  const fullName = clientData
+    ? [
+        clientData.firstname,
+        clientData.middlename,
+        clientData.lastname,
+        clientData.suffix,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : "";
+
   return (
     <div className="m-10">
-      {/* Title */}
-      <div>
       <h2 className="text-xl md:text-1xl xl:text-4xl mb-10">
-        Client Number:{" "}
-        <span className="font-bold">{clientData.queueNumbers[0]}</span>
+        Client ID:{" "}
+        <span className="font-bold">{clientData ? clientData.id : ""}</span>
       </h2>
 
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Name:</span> {clientData.name}
+        <span className="font-bold">Name:</span> {fullName}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Age:</span> {clientData.age}
+        <span className="font-bold">Age:</span>{" "}
+        {clientData ? clientData.age : ""}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Sex:</span> {clientData.sex}
+        <span className="font-bold">Sex:</span> a
+        {clientData ? clientData.sex : ""}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Contact Number:</span>{" "}
-        {clientData.contact}
+        <span className="font-bold">Contact:</span>{" "}
+        {clientData ? clientData.contact : ""}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Address:</span> {clientData.address}
+        <span className="font-bold">Address:</span>{" "}
+        {clientData ? clientData.address : ""}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Email:</span> {clientData.email}
+        <span className="font-bold">Email:</span>{" "}
+        {clientData ? clientData.email : ""}
       </p>
       <p className="mb-2 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Passport Number:</span>{" "}
-        {clientData.passportNumber}
+        <span className="font-bold">Passport:</span>{" "}
+        {clientData ? clientData.passport_number : ""}
       </p>
-
-      <p className="mb-4 text-base md:text-sm xl:text-2xl">
-        <span className="font-bold">Appointment:</span>{" "}
-        {clientData.appointment ? "Yes" : "No"}
+      <p className="mb-2 text-base md:text-sm xl:text-2xl">
+        <span className="font-bold">Purpose:</span>{" "}
+        {clientData ? clientData.purpose : ""}
       </p>
-      <p className="mb-2 text-sm xl:text-2xl">
-        <span className="font-bold">Transaction:</span>{" "}
-        {clientData.transaction}
+      <p className="mb-2 text-base md:text-sm xl:text-2xl">
+        <span className="font-bold">Priority:</span>{" "}
+        {clientData ? (clientData.priority ? " Yes" : " No") : ""}
       </p>
-      </div>
+      <p className="mb-2 text-base md:text-sm xl:text-2xl">
+        <span className="font-bold">Status:</span>{" "}
+        {clientData ? clientData.status : ""}
+      </p>
     </div>
   );
 };
+
 export default ClientCard;
