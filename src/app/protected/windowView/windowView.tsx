@@ -16,6 +16,7 @@ interface WindowViewProps {
   setIsModalOpen: (isModalOpen: boolean) => void;
   columns: any[];
   handleProceed: () => void;
+  handleDone: () => void;
   clientData: any;
 }
 
@@ -26,6 +27,7 @@ const WindowView: React.FC<WindowViewProps> = ({
   setIsModalOpen,
   columns,
   handleProceed,
+  handleDone,
   clientData,
 }) => {
   return (
@@ -83,6 +85,8 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:active": { bgcolor: "forestgreen" },
                   width: "fit-Container",
                 }}
+                onClick={handleProceed}
+                disabled={!!clientData}
               >
                 PROCEED
               </Button>
@@ -120,6 +124,7 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:hover": { bgcolor: "darkgreen" },
                   "&:active": { bgcolor: "forestgreen" },
                 }}
+                onClick={handleDone}
               >
                 Done
               </Button>

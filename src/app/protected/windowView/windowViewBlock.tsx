@@ -9,27 +9,29 @@ const WindowViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("WINDOW 1");
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { execute: executeLogout } = useApiCallback<string, [string]>(
-    logoutApi
-  );
+  const { execute: executeLogout } = useApiCallback<string, [string]>(logoutApi);
 
   const [tempClient] = useState("43");
 
-  const { execute: fetchClient, result: clientData } = useApiCallback<
-    currentClientResponse,
-    [string | number]
-  >(getCurrentClient);
+  // Keep clientData in local state so we can clear it when "Done" is clicked
+  const [clientData, setClientData] = useState<currentClientResponse | null>(null);
+
+  const { execute: fetchClient } = useApiCallback<currentClientResponse, [string | number]>(
+    getCurrentClient
+  );
 
   const handleProceed = async () => {
     try {
-      // Execute the API call with the client ID
-      await fetchClient(tempClient);
-      if (clientData) {
-        console.log("Client data:", clientData);
-      }
+      const result = await fetchClient(tempClient);
+      console.log("Fetched client data:", result);
+      setClientData(result);
     } catch (error) {
       console.error("Failed to fetch client:", error);
     }
+  };
+
+  const handleDone = () => {
+    setClientData(null);
   };
 
   const handleLogout = async () => {
@@ -66,6 +68,7 @@ const WindowViewBlock: React.FC = () => {
       setIsModalOpen={setIsModalOpen}
       columns={columns}
       handleProceed={handleProceed}
+      handleDone={handleDone}
       clientData={clientData}
     />
   );

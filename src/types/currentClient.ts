@@ -1,5 +1,5 @@
 export interface currentClientResponse {
-    id: number; // Assuming `id` is a single number based on the provided data
+    id: number;
     firstname: string;
     middlename: string;
     lastname: string;

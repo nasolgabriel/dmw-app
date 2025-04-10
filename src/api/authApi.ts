@@ -29,7 +29,7 @@ export const getCurrentClient = async (
   id: string | number
 ): Promise<currentClientResponse> => {
   const response = await axiosInstance.get(`/clients/${id}`);
-  return response.data;
+  return response.data.data;
 };
 
 // export const getClientTable = async (): Promise<>
