@@ -82,6 +82,11 @@ const LoginPage: React.FC<LoginPageProps> = ({
             outlinedColor="#bbb9b9"
             filledColor="#d8d4d4"
             error={!!loginErrors.password}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onLogin();
+              }
+            }}
             helperText={loginErrors.password || ""}
             endAdornment={
               <InputAdornment position="end">

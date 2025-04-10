@@ -13,7 +13,6 @@ class Client extends Model
         'firstName',
         'middleName',
         'lastName',
-        'suffix',
         'contact',
         'purpose',
         'age',

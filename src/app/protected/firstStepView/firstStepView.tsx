@@ -45,7 +45,7 @@ const FirstStepView: React.FC<FirstStepViewProps> = ({
             color="error"
             onClick={handleLogout}
             style={{
-              fontSize: "1.3rem",
+              fontSize: "1rem",
               fontWeight: "bold",
               padding: ".5rem 1rem",
             }}

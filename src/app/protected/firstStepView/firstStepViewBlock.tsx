@@ -5,11 +5,25 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ClientInfoFormData, clientInfoSchema } from "./validation";
 import calculateAge from "@/hooks/useCalculateAge";
 import { useNavigate } from "react-router-dom";
+import { useApiCallback } from "@/hooks/useApi";
+import { firstStepForm } from "@/types/firstStepForm";
+import { clientInfo, logoutApi } from "@/api/authApi";
 
 const FirstStepViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("FIRST STEP");
   const [age, setAge] = useState<number | null>(null);
   const navigate = useNavigate();
+
+  const { execute: submitClientInfo, loading } = useApiCallback(
+    async (formData: firstStepForm) => {
+      const response = await clientInfo(formData);
+      return response;
+    }
+  );
+
+  const { execute: executeLogout } = useApiCallback<string, [string]>(
+    logoutApi
+  );
 
   // Initialize form using react-hook-form directly
   const {
@@ -59,35 +73,35 @@ const FirstStepViewBlock: React.FC = () => {
     }
   }, [birthdate]);
 
-  // Form submission handler
-  const onSubmit = (data: ClientInfoFormData) => {
-    console.log("Form submitted:", data);
-
-    // Transform the data to match the backend format
-    const backendFormattedData = {
-      firstname: data.firstName,
-      middlename: data.middleName,
-      lastname: data.surname,
-      contact: data.phoneNumber,
-      purpose:
-        Array.isArray(data.transactionType) && data.transactionType.length > 0
-          ? data.transactionType[0] // Just use the first item if we only allow one selection
+  const onSubmit = async (data: ClientInfoFormData) => {
+    try {
+      // Transform the data to match the API interface
+      const apiPayload: firstStepForm = {
+        firstName: data.firstName,
+        middleName: data.middleName || null,
+        lastName: data.surname,
+        contact: data.phoneNumber,
+        purpose: Array.isArray(data.transactionType)
+          ? data.transactionType.join(", ")
           : "",
-      age: age,
-      sex: data.sex.toLowerCase(),
-      status: "in queue",
-      passport_number: data.passportNumber,
-      address: data.address,
-      email: data.email,
-      priority: data.priority,
-      birthday: data.birthdate
-        ? new Date(data.birthdate).toISOString().split("T")[0]
-        : null,
-    };
+        priority: data.priority,
+        age: age || 0,
+        birthday: data.birthdate
+          ? new Date(data.birthdate).toISOString().split("T")[0]
+          : null,
+        sex: data.sex.toLowerCase() as "male" | "female",
+        passport_number: data.passportNumber || null,
+        email: data.email || null,
+        address: data.address || null,
+      };
 
-    console.log("Backend formatted data:", backendFormattedData);
+      // Execute the API call
+      const result = await submitClientInfo(apiPayload);
 
-    // Add API call or data processing logic here
+      console.log("API response:", result);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
   };
 
   const resetForm = () => {
@@ -95,10 +109,16 @@ const FirstStepViewBlock: React.FC = () => {
     setAge(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_role");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await executeLogout("Successfully logged out.");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

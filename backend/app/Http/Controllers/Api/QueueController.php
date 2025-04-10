@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\Service;
-use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
         /**
