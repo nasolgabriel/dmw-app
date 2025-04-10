@@ -58,9 +58,10 @@ Route::prefix('queues')->group(function () {
     Route::get('/active', [QueueController::class, 'activeQueue']);
     Route::post('/', [QueueController::class, 'store']);
     Route::get('/division', [QueueController::class, 'getDivisions']); // Note the '/division'
-    Route::get('/division/{divisionId}', [QueueController::class, 'getDivisionQueues']);
     Route::get('/{id}', [QueueController::class, 'show']);
     Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
     Route::get('/next', [QueueController::class, 'nextInQueue']);
+    Route::get('/division/{division}', [QueueController::class, 'getDivisionQueues'])
+        ->where('division', '.*');
 });

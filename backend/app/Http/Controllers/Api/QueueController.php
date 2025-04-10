@@ -68,6 +68,68 @@ public function transferToCounter(Request $request, int $id): JsonResponse
         'data' => $queueEntry->load(['client', 'service', 'counter'])
     ]);
 }
+/**
+ * Get queues for a specific division
+ * 
+ * @param string $division Division name or ID
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function getDivisionQueues($division)
+{
+    try {
+        // URL decode the division name
+        $division = urldecode($division);
+        
+        // First, check if this is a division name (non-numeric)
+        if (!is_numeric($division)) {
+            // Find all services in this division by name
+            $services = Service::where('division', $division)->get();
+        } else {
+            // If numeric, it might be a service ID
+            $service = Service::find($division);
+            $services = $service ? collect([$service]) : collect();
+        }
+        
+        // If no services found
+        if ($services->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Division not found or no services in this division: ' . $division
+            ], 404);
+        }
+        
+        // Get all service IDs in this division
+        $serviceIds = $services->pluck('id')->toArray();
+        $divisionName = $services->first()->division;
+        
+        // Get queues for all services in this division
+        $queues = Queue::whereIn('service_id', $serviceIds)
+            ->with(['client:id,firstName,middleName,lastName', 'service:id,abbreviation,description'])
+            ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id')
+            ->orderBy('created_at')
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'division' => $divisionName,
+                'services' => $services->map(function($service) {
+                    return [
+                        'id' => $service->id,
+                        'abbreviation' => $service->abbreviation,
+                        'description' => $service->description
+                    ];
+                }),
+                'queues' => $queues
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve division queues: ' . $e->getMessage()
+        ], 500);
+    }
+}
     public function getDivisions(): JsonResponse
 {
     // Fetch services with detailed queue information
