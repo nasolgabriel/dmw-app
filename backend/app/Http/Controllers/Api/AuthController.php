@@ -12,59 +12,68 @@ use App\Models\ServiceCounter; // Ensure this model is imported
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'username' => 'required|string',
-            'password' => 'required'
-        ]);
+{
+    $credentials = $request->validate([
+        'username' => 'required|string',
+        'password' => 'required'
+    ]);
+    
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
         
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            
-            // Generate token if using Sanctum
-            $token = null;
-            if (method_exists($user, 'createToken')) {
-                $token = $user->createToken('auth_token')->plainTextToken;
-            }
-            
-            // Handle counter activation and assignment
-            if ($user->counter_id) {
-                $counter = ServiceCounter::find($user->counter_id);
-                if ($counter) {
-                    $counter->status = 'active';
-                    $counter->user_id = $user->id;
-                    $counter->save();
-                }
-            } elseif ($request->has('counter_id')) {
-                $counter = ServiceCounter::findOrFail($request->counter_id);
+        // Generate token if using Sanctum
+        $token = null;
+        if (method_exists($user, 'createToken')) {
+            $token = $user->createToken('auth_token')->plainTextToken;
+        }
+        
+        // Handle counter activation and assignment
+        $counterService = null;
+        
+        if ($user->counter_id) {
+            $counter = ServiceCounter::with('service')->find($user->counter_id);
+            if ($counter) {
                 $counter->status = 'active';
                 $counter->user_id = $user->id;
                 $counter->save();
-                
-                // Update user's default counter
-                $user->counter_id = $counter->id;
-                $user->save();
+                $counterService = $counter->service;
             }
+        } elseif ($request->has('counter_id')) {
+            $counter = ServiceCounter::with('service')->findOrFail($request->counter_id);
+            $counter->status = 'active';
+            $counter->user_id = $user->id;
+            $counter->save();
             
-            // Prepare the response data
-            $responseData = [
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'role' => 'windows',
-            ];
-            
-            // Add role if counter_id is null
-            if (is_null($user->counter_id)) {
-                $responseData['role'] = 'firststep';
-            }
-            
-            return response()->json($responseData);
+            // Update user's default counter
+            $user->counter_id = $counter->id;
+            $user->save();
+            $counterService = $counter->service;
         }
         
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        // Prepare the response data
+        $responseData = [
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'role' => 'windows',
+        ];
+        
+        // Add only the service information as counter
+        if ($counterService) {
+            $responseData['counter'] = $counterService;
+        }
+        
+        // Add role if counter_id is null
+        if (is_null($user->counter_id)) {
+            $responseData['role'] = 'firststep';
+        }
+        
+        return response()->json($responseData);
     }
     
+    return response()->json(['message' => 'Invalid credentials'], 401);
+}
+
     public function logout(Request $request)
     {
         try {
