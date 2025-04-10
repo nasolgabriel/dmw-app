@@ -7,7 +7,8 @@ import calculateAge from "@/hooks/useCalculateAge";
 import { useNavigate } from "react-router-dom";
 import { useApiCallback } from "@/hooks/useApi";
 import { firstStepForm } from "@/types/firstStepForm";
-import { clientInfo, logoutApi } from "@/api/authApi";
+import { clientInfo, getTicketNumber, logoutApi } from "@/api/authApi";
+import { toast, ToastContainer } from "react-toastify";
 
 const FirstStepViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("FIRST STEP");
@@ -24,6 +25,11 @@ const FirstStepViewBlock: React.FC = () => {
   const { execute: executeLogout } = useApiCallback<string, [string]>(
     logoutApi
   );
+
+  const { execute: fetchTicketNumber } = useApiCallback(async (id: number) => {
+    const ticketNumber = await getTicketNumber(id);
+    return ticketNumber;
+  });
 
   // Initialize form using react-hook-form directly
   const {
@@ -98,9 +104,35 @@ const FirstStepViewBlock: React.FC = () => {
       // Execute the API call
       const result = await submitClientInfo(apiPayload);
 
-      console.log("API response:", result);
+      // Ensure result exists
+      if (!result) {
+        throw new Error("No response from server");
+      }
+
+      // Parse the response
+      const parsed = typeof result === "string" ? JSON.parse(result) : result;
+
+      // Validate and convert ID to number
+      if (!parsed?.id && !parsed?.data?.id) {
+        throw new Error("Missing ID in API response");
+      }
+
+      const rawId = parsed.id || parsed.data?.id;
+      const queueId = Number(rawId);
+
+      // Fetch ticket number with validated numeric ID
+      const ticketNumber = await fetchTicketNumber(queueId);
+
+      toast.success(`ASSIGNED NUMBER: ${ticketNumber}`, {
+        autoClose: 5000,
+        position: "top-center",
+        theme: "colored",
+      });
+
+      console.log("Ticket Number:", ticketNumber);
     } catch (error) {
       console.error("Submission failed:", error);
+      // Add error state handling here
     }
   };
 
@@ -122,18 +154,21 @@ const FirstStepViewBlock: React.FC = () => {
   };
 
   return (
-    <FirstStepView
-      formProps={{
-        control,
-        handleSubmit,
-        errors,
-        onSubmit,
-        age,
-        setAge,
-      }}
-      windowTitle={windowTitle}
-      handleLogout={handleLogout}
-    />
+    <>
+      <ToastContainer />
+      <FirstStepView
+        formProps={{
+          control,
+          handleSubmit,
+          errors,
+          onSubmit,
+          age,
+          setAge,
+        }}
+        windowTitle={windowTitle}
+        handleLogout={handleLogout}
+      />
+    </>
   );
 };
 

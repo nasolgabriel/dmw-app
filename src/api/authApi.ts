@@ -32,4 +32,9 @@ export const getCurrentClient = async (
   return response.data.data;
 };
 
+export const getTicketNumber = async (id: number): Promise<string> => {
+  const response = await axiosInstance.get(`/queues/${id}`);
+  return response.data.data.ticket_number;
+};
+
 // export const getClientTable = async (): Promise<>
