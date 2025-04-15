@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Models\Service;
+use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
         /**
@@ -104,8 +105,11 @@ public function getDivisionQueues($division)
         
         // Get queues for all services in this division
         $queues = Queue::whereIn('service_id', $serviceIds)
-            ->with(['client:id,firstName,middleName,lastName', 'service:id,abbreviation,description'])
-            ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id')
+            ->with([
+                'client:id,firstName,middleName,lastName', 
+                'service:id,abbreviation,description'
+            ])
+            ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id', 'counter_id')
             ->orderBy('created_at')
             ->get();
         

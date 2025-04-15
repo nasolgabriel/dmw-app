@@ -57,11 +57,15 @@ Route::prefix('queues')->group(function () {
     Route::get('/', [QueueController::class, 'index']);
     Route::get('/active', [QueueController::class, 'activeQueue']);
     Route::post('/', [QueueController::class, 'store']);
-    Route::get('/division', [QueueController::class, 'getDivisions']); // Note the '/division'
+    
+    // Place specific routes BEFORE dynamic parameter routes
+    Route::get('/division', [QueueController::class, 'getDivisions']);
+    Route::get('/division/{division}', [QueueController::class, 'getDivisionQueues'])
+        ->where('division', '.*');
+    Route::get('/next', [QueueController::class, 'nextInQueue']);
+    
+    // Place dynamic parameter routes at the end
     Route::get('/{id}', [QueueController::class, 'show']);
     Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
-    Route::get('/next', [QueueController::class, 'nextInQueue']);
-    Route::get('/division/{division}', [QueueController::class, 'getDivisionQueues'])
-        ->where('division', '.*');
 });
