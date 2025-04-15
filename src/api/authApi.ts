@@ -32,9 +32,18 @@ export const getCurrentClient = async (
   return response.data.data;
 };
 
+<<<<<<< Updated upstream
 export const getTicketNumber = async (id: number): Promise<string> => {
   const response = await axiosInstance.get(`/queues/${id}`);
   return response.data.data.ticket_number;
 };
 
+=======
+export const getCurrentClient = async (
+  id: string | number
+): Promise<currentClientResponse> => {
+  const response = await axiosInstance.get(`/clients/${id}`);
+  return response.data.data;
+};
+>>>>>>> Stashed changes
 // export const getClientTable = async (): Promise<>
