@@ -1,24 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
-import { getCurrentClient, logoutApi } from "@/api/authApi";
+import { getClientTable, getCurrentClient, logoutApi } from "@/api/authApi";
 import { currentClientResponse } from "@/types/currentClient";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const WindowViewBlock: React.FC = () => {
-  const [windowTitle, setWindowTitle] = useState("WINDOW 1");
+  const [windowTitle, setWindowTitle] = useState(() => (localStorage.getItem("window")?? "window").toUpperCase());
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { execute: executeLogout } = useApiCallback<string, [string]>(logoutApi);
+  const { execute: executeLogout } = useApiCallback<string, [string]>(
+    logoutApi
+  );
 
   const [tempClient] = useState("43");
 
   // Keep clientData in local state so we can clear it when "Done" is clicked
-  const [clientData, setClientData] = useState<currentClientResponse | null>(null);
-
-  const { execute: fetchClient } = useApiCallback<currentClientResponse, [string | number]>(
-    getCurrentClient
+  const [clientData, setClientData] = useState<currentClientResponse | null>(
+    null
   );
+
+  const { execute: fetchClient } = useApiCallback<
+    currentClientResponse,
+    [string | number]
+  >(getCurrentClient);
+
+  // Get division from localStorage
+  const division = localStorage.getItem("division");
+
+  // React Query implementation
+  const {
+    data: clientTableData,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["clientTable", division], // Unique query key
+    queryFn: () => (division ? getClientTable(division) : Promise.resolve([])),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
+    enabled: !!division,
+  });
+
+  // Auto-refresh interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 1000 * 3);
+
+    return () => clearInterval(interval);
+  }, [refetch]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(`Error fetching client table: ${error}`);
+    }
+  }, [isError]);
+
+  // Log the data whenever it changes
+  useEffect(() => {
+    if (clientTableData) {
+      console.log("Client Table Data:", clientTableData);
+    }
+  }, [clientTableData]);
 
   const handleProceed = async () => {
     try {
@@ -38,7 +84,8 @@ const WindowViewBlock: React.FC = () => {
     try {
       await executeLogout("Successfully logged out");
       localStorage.removeItem("access_token");
-      localStorage.removeItem("user_role");
+      localStorage.removeItem("role");
+
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
@@ -46,18 +93,9 @@ const WindowViewBlock: React.FC = () => {
   };
 
   const columns = [
-    {
-      header: "Number",
-      accessorKey: "number",
-    },
-    {
-      header: "Name",
-      accessorKey: "name",
-    },
-    {
-      header: "Time",
-      accessorKey: "time",
-    },
+    { header: "Ticket Number", accessorKey: "ticket_number" },
+    { header: "Name", accessorKey: "name" },
+    { header: "Time", accessorKey: "time" },
   ];
 
   return (
@@ -70,6 +108,8 @@ const WindowViewBlock: React.FC = () => {
       handleProceed={handleProceed}
       handleDone={handleDone}
       clientData={clientData}
+      clientTableData={clientTableData ?? []}
+
     />
   );
 };

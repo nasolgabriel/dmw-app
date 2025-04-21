@@ -2,6 +2,7 @@ import axiosInstance from "./axiosInstance";
 import { LoginCredentials, LoginResponse } from "../types/auth";
 import { firstStepForm } from "@/types/firstStepForm";
 import { currentClientResponse } from "@/types/currentClient";
+import { ClientTable } from "@/types/clientTable";
 
 export const loginApi = async (
   credentials: LoginCredentials
@@ -32,18 +33,27 @@ export const getCurrentClient = async (
   return response.data.data;
 };
 
-<<<<<<< Updated upstream
 export const getTicketNumber = async (id: number): Promise<string> => {
   const response = await axiosInstance.get(`/queues/${id}`);
   return response.data.data.ticket_number;
 };
 
-=======
-export const getCurrentClient = async (
-  id: string | number
-): Promise<currentClientResponse> => {
-  const response = await axiosInstance.get(`/clients/${id}`);
-  return response.data.data;
+export const getClientTable = async (
+  division: string
+): Promise<ClientTable[]> => {
+  const response = await axiosInstance.get(
+    `/queues/division/${encodeURIComponent(division)}`
+  );
+
+  return response.data.data.queues.map((queue: any) => ({
+    ticket_number: queue.ticket_number,
+    name: [
+      queue.client.firstName,
+      queue.client.middleName,
+      queue.client.lastName,
+    ]
+      .filter(Boolean)
+      .join(" "),
+    time: queue.created_at.split("T")[1].slice(0, 5),
+  }));
 };
->>>>>>> Stashed changes
-// export const getClientTable = async (): Promise<>

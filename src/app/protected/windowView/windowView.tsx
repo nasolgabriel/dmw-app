@@ -1,13 +1,11 @@
 import { Button, Container } from "@mui/material";
 import { data } from "@/mocks/customTableMock";
 import ClientCard from "./clientCard";
-import { mockOnProcessQueueData } from "@/mocks";
 import StartIcon from "@mui/icons-material/Start";
 import { CustomTable } from "@/components/customTable/customTable";
 import HeaderBar from "@/components/headerBar/headerBar";
 import CustomModal from "@/components/modal/customModal";
 import ClientTransferModal from "./clientTransferModal";
-import { currentClientResponse } from "@/types/currentClient";
 
 interface WindowViewProps {
   windowTitle: string;
@@ -18,6 +16,7 @@ interface WindowViewProps {
   handleProceed: () => void;
   handleDone: () => void;
   clientData: any;
+  clientTableData: any[];
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -29,6 +28,7 @@ const WindowView: React.FC<WindowViewProps> = ({
   handleProceed,
   handleDone,
   clientData,
+  clientTableData
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -47,7 +47,7 @@ const WindowView: React.FC<WindowViewProps> = ({
             <div className="flex justify-center items-center w-[93%] h-[2px] bg-[#E5E5E5] mt-4 ml-4" />
             <CustomTable
               columns={columns}
-              data={data}
+              data={clientTableData}
               sx={{
                 maxWidth: 850,
                 minHeight: 300,

@@ -23,7 +23,7 @@ export const SUFFIX_OPTIONS = [
   { value: 'jr', label: 'Jr.' },
   { value: 'sr', label: 'Sr.' },
   { value: 'i', label: 'I' },
-  { value: 'ii', label: 'II' },
+  { value: 'ii', label: 'II' }, 
   { value: 'iii', label: 'III' },
   { value: 'iv', label: 'IV' },
   { value: 'v', label: 'V' },
