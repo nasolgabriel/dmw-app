@@ -147,7 +147,11 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                   name={field.name}
                   ref={field.ref}
                   onBlur={field.onBlur}
-                  value={Array.isArray(field.value) && field.value.length > 0 ? field.value[0] : ""}
+                  value={
+                    Array.isArray(field.value) && field.value.length > 0
+                      ? field.value[0]
+                      : ""
+                  }
                   placeholder="TRANSACTION TYPE"
                   options={TRANSACTION_OPTIONS}
                   outlinedColor={normalBorderColor}
@@ -170,14 +174,16 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
           />
 
           {/* Name Fields */}
-          <div className="flex w-full justify-between gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex w-full justify-between gap-4 items-stretch">
+            {/* First Name */}
+            <div className="flex-1 flex flex-col mt-3">
               <Controller
                 name="firstName"
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
+                    className="mt-auto" // Pushes content to top
                     placeholder="FIRSTNAME"
                     outlinedColor={normalBorderColor}
                     sx={fieldStyle}
@@ -187,13 +193,15 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                 )}
               />
             </div>
-            <div className="flex-1">
+            {/* Middle Name */}
+            <div className="flex-1 flex flex-col mt-3">
               <Controller
                 name="middleName"
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
+                    className="mt-auto"
                     placeholder="MIDDLENAME"
                     outlinedColor={normalBorderColor}
                     sx={fieldStyle}
@@ -203,13 +211,15 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                 )}
               />
             </div>
-            <div className="flex-1">
+            {/* Surname */}
+            <div className="flex-1 flex flex-col mt-3">
               <Controller
                 name="surname"
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
+                    className="mt-auto"
                     placeholder="SURNAME"
                     outlinedColor={normalBorderColor}
                     sx={fieldStyle}
@@ -219,27 +229,25 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
                 )}
               />
             </div>
-            <div>
+            {/* Suffix */}
+            <div className="flex-1 flex flex-col min-w-[70px]">
               <Controller
                 name="suffix"
                 control={control}
                 render={({ field }) => (
                   <SelectField
                     {...field}
+                    className="mt-auto"
                     placeholder="SUFFIX"
                     options={SUFFIX_OPTIONS}
                     outlinedColor={normalBorderColor}
                     sx={{
                       ...fieldStyle,
                       "& .MuiFormLabel-root": {
-                        fontSize: {
-                          md: "0.5rem",
-                          xl: "0.5rem",
-                        },
+                        fontSize: { md: "0.5rem", xl: "0.5rem" },
                         fontWeight: 550,
                       },
                       paddingBottom: "0.8rem",
-                      minWidth: "70px",
                     }}
                     error={!!errors.suffix}
                     helperText={errors.suffix?.message}
