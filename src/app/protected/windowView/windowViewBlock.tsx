@@ -85,6 +85,8 @@ const WindowViewBlock: React.FC = () => {
       await executeLogout("Successfully logged out");
       localStorage.removeItem("access_token");
       localStorage.removeItem("role");
+      localStorage.removeItem("window");
+      localStorage.removeItem("division");
 
       navigate("/");
     } catch (error) {

@@ -145,7 +145,9 @@ const FirstStepViewBlock: React.FC = () => {
     try {
       await executeLogout("Successfully logged out.");
       localStorage.removeItem("access_token");
-      localStorage.removeItem("user_role");
+      localStorage.removeItem("role");
+      localStorage.removeItem("window");
+      localStorage.removeItem("division");
 
       navigate("/");
     } catch (error) {
