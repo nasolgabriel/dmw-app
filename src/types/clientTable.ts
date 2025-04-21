@@ -1,5 +1,5 @@
 export interface ClientTable {
-    id: number;
-    name: string;
-    time: string;
-  }
+  ticket_number: string;
+  name: string;
+  time: string;
+}

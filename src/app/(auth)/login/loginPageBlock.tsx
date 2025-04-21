@@ -60,6 +60,10 @@ const LoginPageBlock: React.FC = () => {
         setLoginErrors({});
         localStorage.setItem("access_token", response.access_token);
         localStorage.setItem("role", response.role);
+        localStorage.setItem("window", response.user.name)
+        if (response.counter?.division) {
+          localStorage.setItem("division", response.counter.division);
+        }
 
         if (!rememberMe || !rememberPassword) {
           localStorage.removeItem("rememberedUser");
