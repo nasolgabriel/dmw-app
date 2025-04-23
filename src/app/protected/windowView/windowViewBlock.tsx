@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { useNavigate } from "react-router-dom";
 import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
 import { getClientTable, getCurrentClient, logoutApi } from "@/api/authApi";
@@ -8,90 +8,78 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 const WindowViewBlock: React.FC = () => {
-  const [windowTitle, setWindowTitle] = useState(() => (localStorage.getItem("window")?? "window").toUpperCase());
+  const [windowTitle] = useState(() =>
+    (localStorage.getItem("window") ?? "window").toUpperCase()
+  );
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { execute: executeLogout } = useApiCallback<string, [string]>(
     logoutApi
   );
 
-  const [tempClient] = useState("43");
-
-  // Keep clientData in local state so we can clear it when "Done" is clicked
+  // currently selected client id
+  const [tempClient, setTempClient] = useState<string>("");
+  // client data
   const [clientData, setClientData] = useState<currentClientResponse | null>(
     null
   );
-
   const { execute: fetchClient } = useApiCallback<
     currentClientResponse,
     [string | number]
   >(getCurrentClient);
 
-  // Get division from localStorage
   const division = localStorage.getItem("division");
 
-  // React Query implementation
   const {
     data: clientTableData,
     isError,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["clientTable", division], // Unique query key
+    queryKey: ["clientTable", division],
     queryFn: () => (division ? getClientTable(division) : Promise.resolve([])),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
     enabled: !!division,
   });
 
-  // Auto-refresh interval
+  // default to first row's id
   useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 1000 * 3);
-
-    return () => clearInterval(interval);
-  }, [refetch]);
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(`Error fetching client table: ${error}`);
-    }
-  }, [isError]);
-
-  // Log the data whenever it changes
-  useEffect(() => {
-    if (clientTableData) {
-      console.log("Client Table Data:", clientTableData);
+    if (clientTableData?.length) {
+      setTempClient(clientTableData[0].id?.toString() ?? "");
     }
   }, [clientTableData]);
 
+  // auto refresh
+  useEffect(() => {
+    const iv = setInterval(refetch, 3000);
+    return () => clearInterval(iv);
+  }, [refetch]);
+
+  useEffect(() => {
+    if (isError) toast.error(`Error loading table: ${error}`);
+  }, [isError, error]);
+
+  // proceed with selected or default client
   const handleProceed = async () => {
-    try {
-      const result = await fetchClient(tempClient);
-      console.log("Fetched client data:", result);
-      setClientData(result);
-    } catch (error) {
-      console.error("Failed to fetch client:", error);
-    }
+    if (!tempClient) return;
+    const data = await fetchClient(tempClient);
+    setClientData(data);
   };
 
-  const handleDone = () => {
-    setClientData(null);
+  // row-specific proceed
+  const handleRowProceed = async (clientId: string | number) => {
+    const data = await fetchClient(clientId);
+    setClientData(data);
   };
 
+  const handleDone = () => setClientData(null);
   const handleLogout = async () => {
-    try {
-      await executeLogout("Successfully logged out");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("window");
-      localStorage.removeItem("division");
-
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+    await executeLogout("Successfully logged out");
+    ["access_token", "role", "window", "division"].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+    navigate("/");
   };
 
   const columns = [
@@ -111,7 +99,9 @@ const WindowViewBlock: React.FC = () => {
       handleDone={handleDone}
       clientData={clientData}
       clientTableData={clientTableData ?? []}
-
+      onRowClick={handleRowProceed}
+      clientId={Number(tempClient)}
+      refetchClientTable={refetch}
     />
   );
 };

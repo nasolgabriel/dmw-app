@@ -53,7 +53,7 @@ Route::prefix('clients')->group(function () {
 });
 
 Route::prefix('queues')->group(function () {
-    Route::post('/queues/{id}/transfer', [QueueController::class, 'transferToCounter']);
+    Route::post('/{id}/change-division', [QueueController::class, 'changeDivision']);
     Route::get('/', [QueueController::class, 'index']);
     Route::get('/active', [QueueController::class, 'activeQueue']);
     Route::post('/', [QueueController::class, 'store']);
@@ -66,6 +66,6 @@ Route::prefix('queues')->group(function () {
     
     // Place dynamic parameter routes at the end
     Route::get('/{id}', [QueueController::class, 'show']);
-    Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
+    Route::put('/{id}/status', [QueueController::class, 'updateHey, Cortana. Status']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
 });

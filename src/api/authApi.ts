@@ -46,6 +46,7 @@ export const getClientTable = async (
   );
 
   return response.data.data.queues.map((queue: any) => ({
+    id: queue.client.id,
     ticket_number: queue.ticket_number,
     name: [
       queue.client.firstName,
@@ -56,4 +57,14 @@ export const getClientTable = async (
       .join(" "),
     time: queue.created_at.split("T")[1].slice(0, 5),
   }));
+};
+
+export const clientTransfer = async (
+  id: number,
+  divisionName: string
+): Promise<string> => {
+  const response = await axiosInstance.post(`queues/${id}/change-division`, {
+    division: divisionName,
+  });
+  return response.data;
 };
