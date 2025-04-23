@@ -19,10 +19,12 @@ const WindowViewBlock: React.FC = () => {
 
   // currently selected client id
   const [tempClient, setTempClient] = useState<string>("");
+  
   // client data
   const [clientData, setClientData] = useState<currentClientResponse | null>(
     null
   );
+
   const { execute: fetchClient } = useApiCallback<
     currentClientResponse,
     [string | number]
@@ -73,7 +75,7 @@ const WindowViewBlock: React.FC = () => {
     setClientData(data);
   };
 
-  const handleDone = () => setClientData(null);
+  const handleClearCard = () => setClientData(null);
   const handleLogout = async () => {
     await executeLogout("Successfully logged out");
     ["access_token", "role", "window", "division"].forEach((k) =>
@@ -96,7 +98,7 @@ const WindowViewBlock: React.FC = () => {
       setIsModalOpen={setIsModalOpen}
       columns={columns}
       handleProceed={handleProceed}
-      handleDone={handleDone}
+      handleClearCard={handleClearCard}
       clientData={clientData}
       clientTableData={clientTableData ?? []}
       onRowClick={handleRowProceed}

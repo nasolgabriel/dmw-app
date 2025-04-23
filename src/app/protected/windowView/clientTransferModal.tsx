@@ -6,12 +6,14 @@ interface ClientTransferModalProps {
   onClose: () => void;
   clientId: number;
   refetchClientTable: () => void;
+  handleClearCard: () => void;
 }
 
 const ClientTransferModal = ({
   onClose,
   clientId,
   refetchClientTable,
+  handleClearCard,
 }: ClientTransferModalProps) => {
   const divisionMap: { [key: string]: string } = {
     "PROTECTION DIVISION (windows 1-3)": "Migrant Workers Protection Division",
@@ -114,13 +116,16 @@ const ClientTransferModal = ({
             }}
           >
             {group.buttons.map((text, btnIndex) => (
-              <TransferButton
+                <TransferButton
                 key={btnIndex}
-                onClick={() => handleTransferButton(text)}
+                onClick={() => {
+                  handleTransferButton(text);
+                  handleClearCard();
+                }}
                 disabled={transferClient.loading}
-              >
+                >
                 {transferClient.loading ? "Transferring..." : text}
-              </TransferButton>
+                </TransferButton>
             ))}
           </Box>
         ))}

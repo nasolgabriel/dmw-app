@@ -13,7 +13,7 @@ interface WindowViewProps {
   setIsModalOpen: (isModalOpen: boolean) => void;
   columns: any[];
   handleProceed: () => void;
-  handleDone: () => void;
+  handleClearCard: () => void;
   clientData: any;
   clientTableData: any[];
   onRowClick: (id: string | number) => void;
@@ -28,7 +28,7 @@ const WindowView: React.FC<WindowViewProps> = ({
   setIsModalOpen,
   columns,
   handleProceed,
-  handleDone,
+  handleClearCard,
   clientData,
   clientTableData,
   onRowClick,
@@ -121,7 +121,12 @@ const WindowView: React.FC<WindowViewProps> = ({
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
               >
-                <ClientTransferModal onClose={() => setIsModalOpen(false)} clientId={clientId} refetchClientTable={refetchClientTable}  />
+                <ClientTransferModal
+                  onClose={() => setIsModalOpen(false)}
+                  clientId={clientId}
+                  refetchClientTable={refetchClientTable}
+                  handleClearCard={handleClearCard}
+                />
               </CustomModal>
               <Button
                 variant="contained"
@@ -130,7 +135,7 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:hover": { bgcolor: "darkgreen" },
                   "&:active": { bgcolor: "forestgreen" },
                 }}
-                onClick={handleDone}
+                onClick={handleClearCard}
               >
                 Done
               </Button>
