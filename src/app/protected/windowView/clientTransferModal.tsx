@@ -1,6 +1,47 @@
+import { clientTransfer } from "@/api/authApi";
+import { useApiCallback } from "@/hooks/useApi";
 import { Typography, Button, Box, styled } from "@mui/material";
 
-const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
+interface ClientTransferModalProps {
+  onClose: () => void;
+  clientId: number;
+  refetchClientTable: () => void;
+  handleClearCard: () => void;
+}
+
+const ClientTransferModal = ({
+  onClose,
+  clientId,
+  refetchClientTable,
+  handleClearCard,
+}: ClientTransferModalProps) => {
+  const divisionMap: { [key: string]: string } = {
+    "PROTECTION DIVISION (windows 1-3)": "Migrant Workers Protection Division",
+    "PROCESSING DIVISION (windows 4-7)": "Migrant Worker Processing Division", 
+    "WRSD windows (8-10)": "Welfare Reintegration and Services Division",
+    "PAG-IBIG": "PAG IBIG Fund",
+    "CASHIER": "Cashier",
+    "OWWA": "OWWA"
+  };
+
+  const transferClient = useApiCallback(
+    async (clientId: number, divisionName: string) => {
+      return await clientTransfer(clientId, divisionName);
+    }
+  );
+
+  const handleTransferButton = async (divisionName: string) => {
+    if (!clientId) return;
+  
+    try {
+      await clientTransfer(clientId, divisionName);
+      refetchClientTable();
+      onClose();
+    } catch (error) {
+      console.error("Transfer failed:", error);
+    }
+  };
+
   const TransferButton = styled(Button, {
     shouldForwardProp: (prop) => prop !== "isMobile",
   })(({ theme }) => ({
@@ -24,21 +65,20 @@ const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
   const buttonGroups = [
     {
       buttons: [
-        "PROTECTION DIVISION (windows 1-3)",
-        "PROCESSING DIVISION (windows 4-7)",
-        "WRSD windows (8-10)",
-      ],
+        "Migrant Workers Protection Division",
+        "Migrant Worker Processing Division",
+        "Welfare Reintegration and Services Division"
+      ]
     },
     {
-      buttons: ["PAG-IBIG", "OWWA", "CASHIER"],
-      row: true,
-    },
+      buttons: [
+        "PAG IBIG Fund",
+        "OWWA",
+        "Cashier"
+      ],
+      row: true
+    }
   ];
-
-  const handleTransferButton = () => {
-    // TODO: Implement transfer logic and API integration
-    onClose();
-  };
 
   return (
     <Box
@@ -76,10 +116,25 @@ const ClientTransferModal = ({ onClose }: { onClose: () => void }) => {
             }}
           >
             {group.buttons.map((text, btnIndex) => (
-              <TransferButton key={btnIndex} onClick={handleTransferButton}>{text}</TransferButton>
+                <TransferButton
+                key={btnIndex}
+                onClick={() => {
+                  handleTransferButton(text);
+                  handleClearCard();
+                }}
+                disabled={transferClient.loading}
+                >
+                {transferClient.loading ? "Transferring..." : text}
+                </TransferButton>
             ))}
           </Box>
         ))}
+
+        {transferClient.error && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            Transfer failed: {transferClient.error.message}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>

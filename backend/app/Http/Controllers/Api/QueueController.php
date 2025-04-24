@@ -13,14 +13,59 @@ use App\Models\Service;
 use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
-        /**
- * Transfer a queue ticket to another counter.
+    /**
+ * Get all available divisions
+ *
+ * @return JsonResponse
+ */
+public function getDivisions(): JsonResponse
+{
+    try {
+        // Fetch distinct divisions from services table
+        $divisions = Service::select('division')
+            ->distinct()
+            ->orderBy('division')
+            ->get()
+            ->pluck('division')
+            ->filter(); // Remove any null or empty values
+        
+        // Count active queues for each division
+        $divisionsWithCounts = $divisions->map(function($division) {
+            // Find all services in this division
+            $services = Service::where('division', $division)->get();
+            $serviceIds = $services->pluck('id')->toArray();
+            
+            // Count active queues for this division
+            $activeQueuesCount = Queue::whereIn('service_id', $serviceIds)
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->count();
+                
+            return [
+                'name' => $division,
+                'active_queues_count' => $activeQueuesCount,
+                'services_count' => count($serviceIds)
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'data' => $divisionsWithCounts
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve divisions: ' . $e->getMessage()
+        ], 500);
+    }
+}
+/**
+ * Change the division of a queue ticket.
  *
  * @param Request $request
  * @param int $id
  * @return JsonResponse
  */
-public function transferToCounter(Request $request, int $id): JsonResponse
+public function changeDivision(Request $request, int $id): JsonResponse
 {
     // Find the queue entry
     $queueEntry = Queue::find($id);
@@ -34,7 +79,8 @@ public function transferToCounter(Request $request, int $id): JsonResponse
     
     // Validate the request
     $validator = Validator::make($request->all(), [
-        'counter_id' => 'required|exists:service_counters,id',
+        'division' => 'required|string',
+        'service_id' => 'nullable|exists:services,id',
         'reason' => 'nullable|string|max:255',
     ]);
 
@@ -45,32 +91,44 @@ public function transferToCounter(Request $request, int $id): JsonResponse
         ], 422);
     }
     
-    // Get the target counter
-    $targetCounter = ServiceCounter::find($request->counter_id);
-    
-    // Validate if the counter can handle this service
-    if ($targetCounter->service_id != $queueEntry->service_id) {
-        // If the service is different, we need to update the service as well
-        $queueEntry->service_id = $targetCounter->service_id;
+    // If service_id is provided directly, use it
+    if ($request->has('service_id') && $request->service_id) {
+        $serviceId = $request->service_id;
+    } else {
+        // Otherwise, get the first service from the selected division
+        $division = $request->division;
+        $service = Service::where('division', $division)->first();
+        
+        if (!$service) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No services found in the selected division'
+            ], 404);
+        }
+        
+        $serviceId = $service->id;
     }
     
-    // Update the counter assignment
-    $queueEntry->counter_id = $request->counter_id;
+    // Update the service assignment
+    $queueEntry->service_id = $serviceId;
     
-    // If there's a reason provided, we can store it in the queue entry if needed
-    // If you want to track transfer reasons, you might need to add a 'transfer_reason' column to your queues table
+    // Clear the counter assignment since it's changing divisions
+    $queueEntry->counter_id = null;
     
     // Save the changes
     $queueEntry->save();
     
+    // Get the division name for the response
+    $newDivision = Service::find($serviceId)->division;
+    
     return response()->json([
         'success' => true,
-        'message' => 'Queue ticket transferred successfully',
+        'message' => "Queue ticket division changed to {$newDivision}",
         'data' => $queueEntry->load(['client', 'service', 'counter'])
     ]);
 }
 /**
- * Get queues for a specific division
+ * Get queues for a specific division, excluding completed queues
  * 
  * @param string $division Division name or ID
  * @return \Illuminate\Http\JsonResponse
@@ -103,8 +161,9 @@ public function getDivisionQueues($division)
         $serviceIds = $services->pluck('id')->toArray();
         $divisionName = $services->first()->division;
         
-        // Get queues for all services in this division
+        // Get queues for all services in this division, excluding completed queues
         $queues = Queue::whereIn('service_id', $serviceIds)
+            ->whereNotIn('status', ['completed', 'cancelled']) // Add this line to exclude completed and cancelled queues
             ->with([
                 'client:id,firstName,middleName,lastName', 
                 'service:id,abbreviation,description'
@@ -133,24 +192,6 @@ public function getDivisionQueues($division)
             'message' => 'Failed to retrieve division queues: ' . $e->getMessage()
         ], 500);
     }
-}
-    public function getDivisions(): JsonResponse
-{
-    // Fetch services with detailed queue information
-$divisions = Service::select('id', 'description', 'abbreviation')
-->with(['queues' => function ($query) {
-    $query->whereIn('status', ['in queue', 'processing'])
-          ->with(['client' => function($query) {
-              $query->select('id', 'firstName', 'middleName', 'lastName');
-          }]) 
-          ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id');
-}])
-->get();
-
-    return response()->json([
-        'success' => true,
-        'data' => $divisions
-    ]);
 }
     /**
      * Display a listing of queue entries.

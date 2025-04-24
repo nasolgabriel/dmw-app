@@ -1,5 +1,4 @@
 import { Button, Container } from "@mui/material";
-import { data } from "@/mocks/customTableMock";
 import ClientCard from "./clientCard";
 import StartIcon from "@mui/icons-material/Start";
 import { CustomTable } from "@/components/customTable/customTable";
@@ -14,9 +13,12 @@ interface WindowViewProps {
   setIsModalOpen: (isModalOpen: boolean) => void;
   columns: any[];
   handleProceed: () => void;
-  handleDone: () => void;
+  handleClearCard: () => void;
   clientData: any;
   clientTableData: any[];
+  onRowClick: (id: string | number) => void;
+  clientId: number;
+  refetchClientTable: () => void;
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -26,9 +28,12 @@ const WindowView: React.FC<WindowViewProps> = ({
   setIsModalOpen,
   columns,
   handleProceed,
-  handleDone,
+  handleClearCard,
   clientData,
-  clientTableData
+  clientTableData,
+  onRowClick,
+  clientId,
+  refetchClientTable,
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -69,6 +74,7 @@ const WindowView: React.FC<WindowViewProps> = ({
                     }}
                     onClick={() => {
                       console.log("Button clicked for row", row.original);
+                      onRowClick(row.original.id); // Call the row-specific handler
                     }}
                   >
                     <StartIcon sx={{ color: "black" }} />
@@ -115,7 +121,12 @@ const WindowView: React.FC<WindowViewProps> = ({
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
               >
-                <ClientTransferModal onClose={() => setIsModalOpen(false)} />
+                <ClientTransferModal
+                  onClose={() => setIsModalOpen(false)}
+                  clientId={clientId}
+                  refetchClientTable={refetchClientTable}
+                  handleClearCard={handleClearCard}
+                />
               </CustomModal>
               <Button
                 variant="contained"
@@ -124,7 +135,7 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:hover": { bgcolor: "darkgreen" },
                   "&:active": { bgcolor: "forestgreen" },
                 }}
-                onClick={handleDone}
+                onClick={handleClearCard}
               >
                 Done
               </Button>
