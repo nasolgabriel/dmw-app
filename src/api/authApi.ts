@@ -3,6 +3,7 @@ import { LoginCredentials, LoginResponse } from "../types/auth";
 import { firstStepForm } from "@/types/firstStepForm";
 import { currentClientResponse } from "@/types/currentClient";
 import { ClientTable } from "@/types/clientTable";
+import { QueueDisplayData, QueueDisplayResponse } from "@/types/queueDisplay";
 
 export const loginApi = async (
   credentials: LoginCredentials
@@ -68,3 +69,16 @@ export const clientTransfer = async (
   });
   return response.data;
 };
+
+export const getQueueDisplay = async (): Promise<QueueDisplayData[]> => {
+  const response = await axiosInstance.get<QueueDisplayResponse>("/queues/division/");
+  return response.data.data;
+};
+
+export const assignWindowClient = async ( counter_id: number, client_id: number) => {
+  const response = await axiosInstance.post(`/counters/${counter_id}/pick-ticket/${client_id}`, {
+    counter_id,
+    client_id,
+  });
+  return response.data;
+}

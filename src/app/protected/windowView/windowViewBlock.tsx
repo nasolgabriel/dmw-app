@@ -78,7 +78,7 @@ const WindowViewBlock: React.FC = () => {
   const handleClearCard = () => setClientData(null);
   const handleLogout = async () => {
     await executeLogout("Successfully logged out");
-    ["access_token", "role", "window", "division"].forEach((k) =>
+    ["access_token", "role", "window", "division", "counter_id"].forEach((k) =>
       localStorage.removeItem(k)
     );
     navigate("/");
@@ -102,7 +102,7 @@ const WindowViewBlock: React.FC = () => {
       clientData={clientData}
       clientTableData={clientTableData ?? []}
       onRowClick={handleRowProceed}
-      clientId={Number(tempClient)}
+      clientId={clientData?.id||0}
       refetchClientTable={refetch}
     />
   );

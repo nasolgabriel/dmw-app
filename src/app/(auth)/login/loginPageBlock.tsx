@@ -60,7 +60,8 @@ const LoginPageBlock: React.FC = () => {
         setLoginErrors({});
         localStorage.setItem("access_token", response.access_token);
         localStorage.setItem("role", response.role);
-        localStorage.setItem("window", response.user.name)
+        localStorage.setItem("window", response.user.name);
+        localStorage.setItem("counter_id", response.user.counter_id.toString());
         if (response.counter?.division) {
           localStorage.setItem("division", response.counter.division);
         }
