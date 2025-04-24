@@ -75,10 +75,19 @@ export const getQueueDisplay = async (): Promise<QueueDisplayData[]> => {
   return response.data.data;
 };
 
-export const assignWindowClient = async ( counter_id: number, client_id: number) => {
-  const response = await axiosInstance.post(`/counters/${counter_id}/pick-ticket/${client_id}`, {
-    counter_id,
-    client_id,
-  });
+export const assignWindowClient = async (counter_id: number, client_id: number) => {
+  const access_token = localStorage.getItem("access_token");
+  const response = await axiosInstance.post(
+    `/counters/${counter_id}/pick-ticket/${client_id}`,
+    {
+      counter_id,
+      client_id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
   return response.data;
-}
+};

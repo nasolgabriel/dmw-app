@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
-import { getClientTable, getCurrentClient, logoutApi } from "@/api/authApi";
+import { assignWindowClient, getClientTable, getCurrentClient, logoutApi } from "@/api/authApi";
 import { currentClientResponse } from "@/types/currentClient";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -65,14 +65,54 @@ const WindowViewBlock: React.FC = () => {
   // proceed with selected or default client
   const handleProceed = async () => {
     if (!tempClient) return;
-    const data = await fetchClient(tempClient);
-    setClientData(data);
+    try {
+      const data = await fetchClient(tempClient);
+      const counter_id = Number(localStorage.getItem("counter_id"));
+      
+      if (isNaN(counter_id)) {
+        toast.error("Invalid counter ID");
+        return;
+      }
+
+      // Get access token from localStorage
+      const access_token = localStorage.getItem("access_token");
+      if (!access_token) {
+        toast.error("Authentication required");
+        return;
+      }
+
+      await assignWindowClient(counter_id, data.id);
+      setClientData(data);
+      toast.success("Client assigned to window successfully!");
+    } catch (error) {
+      toast.error("Failed to assign client to window");
+    }
   };
 
   // row-specific proceed
   const handleRowProceed = async (clientId: string | number) => {
-    const data = await fetchClient(clientId);
-    setClientData(data);
+    try {
+      const data = await fetchClient(clientId);
+      const counter_id = Number(localStorage.getItem("counter_id"));
+
+      if (isNaN(counter_id)) {
+        toast.error("Invalid counter ID");
+        return;
+      }
+
+      // Get access token from localStorage
+      const access_token = localStorage.getItem("access_token");
+      if (!access_token) {
+        toast.error("Authentication required");
+        return;
+      }
+
+      await assignWindowClient(counter_id, data.id);
+      setClientData(data);
+      toast.success("Client assigned to window successfully!");
+    } catch (error) {
+      toast.error("Failed to assign client to window");
+    }
   };
 
   const handleClearCard = () => setClientData(null);
@@ -108,4 +148,4 @@ const WindowViewBlock: React.FC = () => {
   );
 };
 
-export default WindowViewBlock;
+export default WindowViewBlock; 
