@@ -13,8 +13,8 @@ use App\Models\Service;
 use App\Models\ServiceCounter;
 class QueueController extends Controller
 {
-    /**
- * Get all available divisions
+/**
+ * Get all available divisions with their active queue tickets
  *
  * @return JsonResponse
  */
@@ -29,27 +29,40 @@ public function getDivisions(): JsonResponse
             ->pluck('division')
             ->filter(); // Remove any null or empty values
         
-        // Count active queues for each division
-        $divisionsWithCounts = $divisions->map(function($division) {
+        // Collect information for each division including active queue tickets
+        $divisionsWithData = $divisions->map(function($division) {
             // Find all services in this division
             $services = Service::where('division', $division)->get();
             $serviceIds = $services->pluck('id')->toArray();
             
-            // Count active queues for this division
-            $activeQueuesCount = Queue::whereIn('service_id', $serviceIds)
+            // Get active queues for this division with ticket numbers
+            $activeQueues = Queue::whereIn('service_id', $serviceIds)
                 ->whereNotIn('status', ['completed', 'cancelled'])
-                ->count();
+                ->with(['service:id,abbreviation,description', 'counter'])
+                ->select('id', 'ticket_number', 'service_id', 'counter_id', 'status', 'created_at')
+                ->orderBy('created_at')
+                ->get();
                 
             return [
                 'name' => $division,
-                'active_queues_count' => $activeQueuesCount,
-                'services_count' => count($serviceIds)
+                'active_queues_count' => $activeQueues->count(),
+                'services_count' => count($serviceIds),
+                'active_tickets' => $activeQueues->map(function($queue) {
+                    return [
+                        'id' => $queue->id,
+                        'ticket_number' => $queue->ticket_number,
+                        'service' => $queue->service ? $queue->service->abbreviation : null,
+                        'counter_id' => $queue->counter_id,
+                        'status' => $queue->status,
+                        'created_at' => Carbon::parse($queue->created_at)->setTimezone('Asia/Manila')->format('Y-m-d H:i:s')
+                    ];
+                })
             ];
         });
         
         return response()->json([
             'success' => true,
-            'data' => $divisionsWithCounts
+            'data' => $divisionsWithData
         ]);
     } catch (\Exception $e) {
         return response()->json([

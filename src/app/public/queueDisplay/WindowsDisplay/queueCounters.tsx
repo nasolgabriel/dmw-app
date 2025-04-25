@@ -1,19 +1,35 @@
-import { mockQueueData } from "@/mocks";
+"use client";
 import { Typography } from "@mui/material";
 import { divisionStructure } from "../types";
-import { useState, useEffect, useRef } from "react";
-import '../../../../styles/globals.css';
+import { useQueueDisplay } from "@/hooks/useQueueDisplay";
 import { useBlinkOnChange } from "@/hooks/useBlinkOnChange";
-
-
+import '../../../../styles/globals.css';
 
 const QueueCounters = () => {
-  const dataMap = new Map(
-    mockQueueData.map((item) => [item.counter.toUpperCase(), item])
-  );
-
+  const { data, isLoading } = useQueueDisplay();
+ 
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-full">Loading counters...</div>;
+  }
+ 
+  // Create a map for easy lookup by counter name
+  const dataMap = new Map();
+  
+  // Add window items to the map
+  if (data?.windowItems) {
+    data.windowItems.forEach(item => {
+      dataMap.set(item.counter.toUpperCase(), item);
+    });
+  }
+  
+  // Add cashier item if exists
+  if (data?.cashierItem) {
+    dataMap.set(data.cashierItem.counter.toUpperCase(), data.cashierItem);
+  }
+  
+  // Monitor for changes to trigger blinking effect
   const blinkingCounters = useBlinkOnChange(dataMap, 3000, "clientNumber");
-
+ 
   return (
     <div className="flex w-full h-screen overflow-x-clip">
       {divisionStructure.map((division) => (
@@ -39,15 +55,13 @@ const QueueCounters = () => {
           >
             {division.title}
           </Typography>
-
           {/* Counters Grid */}
-          <div className="grid grid-rows-4  flex-row h-[80vh]">
+          <div className="grid grid-rows-4 flex-row h-[80vh]">
             {division.items.map((counter, index) => {
               const item = counter ? dataMap.get(counter.toUpperCase()) : null;
               const isBlinking = counter
                 ? blinkingCounters[counter.toUpperCase()]
                 : false;
-
               return (
                 <div
                   key={counter || index}
@@ -58,7 +72,7 @@ const QueueCounters = () => {
                     {counter || "\u00A0"}
                   </span>
                   <span
-                    className={`text-[1rem] xl:text-[3.5rem] font-extrabold h-full flex-1 flex items-center justify-center ${
+                    className={`text-[1rem] xl:text-[2.5rem] font-extrabold h-full flex-1 flex items-center justify-center ${
                       isBlinking ? "blinking-text" : ""
                     }`}
                   >

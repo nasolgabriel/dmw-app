@@ -1,42 +1,43 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from 'react';
 
-export function useBlinkOnChange(
+export const useBlinkOnChange = (
   dataMap: Map<string, any>,
-  blinkDuration: number,
-  propertyToTrack = "clientNumber"
-): Record<string, boolean> {
-  const [blinkingItems, setBlinkingItems] = useState<Record<string, boolean>>(
-    {}
-  );
-  const prevDataMapRef = useRef<Map<string, any>>(new Map());
+  blinkDuration: number = 3000,
+  valueKey: string = 'clientNumber'
+) => {
+  const [blinkingItems, setBlinkingItems] = useState<Record<string, boolean>>({});
+  const prevDataRef = useRef<Map<string, any>>(new Map());
 
   useEffect(() => {
     const newBlinkingItems: Record<string, boolean> = {};
-    let hasChanges = false;
-
-    dataMap.forEach((item, key) => {
-      const prevItem = prevDataMapRef.current.get(key);
-      if (prevItem && prevItem[propertyToTrack] !== item[propertyToTrack]) {
+    
+    // Check for changes in the data
+    dataMap.forEach((value, key) => {
+      const prevValue = prevDataRef.current.get(key);
+      
+      // If the value is different, start blinking
+      if (prevValue && JSON.stringify(prevValue[valueKey]) !== JSON.stringify(value[valueKey])) {
         newBlinkingItems[key] = true;
-        hasChanges = true;
-
-        // Stop blinking after specified duration
+        
+        // Set a timeout to stop blinking after the duration
         setTimeout(() => {
-          setBlinkingItems((prev) => ({
-            ...prev,
-            [key]: false,
-          }));
+          setBlinkingItems(prev => {
+            const updated = { ...prev };
+            delete updated[key];
+            return updated;
+          });
         }, blinkDuration);
       }
     });
-
-    if (hasChanges) {
-      setBlinkingItems((prev) => ({ ...prev, ...newBlinkingItems }));
+    
+    // Update the blinking state
+    if (Object.keys(newBlinkingItems).length > 0) {
+      setBlinkingItems(prev => ({ ...prev, ...newBlinkingItems }));
     }
-
-    // Update previous data reference
-    prevDataMapRef.current = new Map(dataMap);
-  }, [dataMap, blinkDuration, propertyToTrack]);
-
+    
+    // Update the reference to the current data
+    prevDataRef.current = new Map(dataMap);
+  }, [dataMap, blinkDuration, valueKey]);
+  
   return blinkingItems;
-}
+};
