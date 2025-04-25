@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
-import { assignWindowClient, getClientTable, getCurrentClient, logoutApi } from "@/api/authApi";
+import {
+  assignWindowClient,
+  getClientTable,
+  getCurrentClient,
+  getCurrentClientByCounter,
+  logoutApi,
+} from "@/api/authApi";
 import { currentClientResponse } from "@/types/currentClient";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -19,11 +25,30 @@ const WindowViewBlock: React.FC = () => {
 
   // currently selected client id
   const [tempClient, setTempClient] = useState<string>("");
-  
+
   // client data
   const [clientData, setClientData] = useState<currentClientResponse | null>(
     null
   );
+
+  useEffect(() => {
+    const fetchCurrentClientForCounter = async () => {
+      const storedCounterId = localStorage.getItem("counter_id");
+      if (storedCounterId) {
+        const counterId = Number(storedCounterId);
+        if (!isNaN(counterId)) {
+          try {
+            const client = await getCurrentClientByCounter(counterId);
+            setClientData(client);
+          } catch (error) {
+            console.error("No client assigned to this counter", error);
+          }
+        }
+      }
+    };
+
+    fetchCurrentClientForCounter();
+  }, []); // Empty dependency array to run once on mount
 
   const { execute: fetchClient } = useApiCallback<
     currentClientResponse,
@@ -68,7 +93,7 @@ const WindowViewBlock: React.FC = () => {
     try {
       const data = await fetchClient(tempClient);
       const counter_id = Number(localStorage.getItem("counter_id"));
-      
+
       if (isNaN(counter_id)) {
         toast.error("Invalid counter ID");
         return;
@@ -142,10 +167,10 @@ const WindowViewBlock: React.FC = () => {
       clientData={clientData}
       clientTableData={clientTableData ?? []}
       onRowClick={handleRowProceed}
-      clientId={clientData?.id||0}
+      clientId={clientData?.id || 0}
       refetchClientTable={refetch}
     />
   );
 };
 
-export default WindowViewBlock; 
+export default WindowViewBlock;

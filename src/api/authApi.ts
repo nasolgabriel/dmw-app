@@ -46,7 +46,12 @@ export const getClientTable = async (
     `/queues/division/${encodeURIComponent(division)}`
   );
 
-  return response.data.data.queues.map((queue: any) => ({
+  // Filter out queues with "processing" status, only keep "in queue"
+  const filteredQueues = response.data.data.queues.filter(
+    (queue: any) => queue.status === "in queue"
+  );
+
+  return filteredQueues.map((queue: any) => ({
     id: queue.client.id,
     ticket_number: queue.ticket_number,
     name: [
@@ -71,11 +76,16 @@ export const clientTransfer = async (
 };
 
 export const getQueueDisplay = async (): Promise<QueueDisplayData[]> => {
-  const response = await axiosInstance.get<QueueDisplayResponse>("/queues/division/");
+  const response = await axiosInstance.get<QueueDisplayResponse>(
+    "/queues/division/"
+  );
   return response.data.data;
 };
 
-export const assignWindowClient = async (counter_id: number, client_id: number) => {
+export const assignWindowClient = async (
+  counter_id: number,
+  client_id: number
+) => {
   const access_token = localStorage.getItem("access_token");
   const response = await axiosInstance.post(
     `/counters/${counter_id}/pick-ticket/${client_id}`,
@@ -91,3 +101,11 @@ export const assignWindowClient = async (counter_id: number, client_id: number) 
   );
   return response.data;
 };
+
+export const getCurrentClientByCounter = async (
+  counter_id: number
+): Promise<currentClientResponse> => {
+  const response = await axiosInstance.get(`/clients/${counter_id}`);
+  return response.data.data;
+};
+
