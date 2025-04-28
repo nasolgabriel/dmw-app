@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\Queue;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -81,27 +82,37 @@ class ClientController extends Controller
     }
 
     /**
-     * Display the specified client.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function show(int $id): JsonResponse
-    {
-        $client = Client::find($id);
-        
-        if (!$client) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Client not found'
-            ], 404);
-        }
-
+ * Display the specified client with their assigned ticket.
+ *
+ * @param int $id
+ * @return JsonResponse
+ */
+public function show(int $id): JsonResponse
+{
+    $client = Client::find($id);
+    
+    if (!$client) {
         return response()->json([
-            'success' => true,
-            'data' => $client
-        ]);
+            'success' => false,
+            'message' => 'Client not found'
+        ], 404);
     }
+
+    // Get the client's active ticket from the queue if exists
+    $ticket = Queue::where('client_id', $client->id)
+                  ->where('status', '!=', 'completed')
+                  ->orderBy('created_at', 'desc')
+                  ->first();
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'client' => $client,
+            'ticket_number' => $ticket ? $ticket->ticket_number : null
+        ]
+    ]);
+}
+
     /**
      * Update the specified client in storage.
      *

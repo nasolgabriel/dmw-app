@@ -66,6 +66,6 @@ Route::prefix('queues')->group(function () {
     
     // Place dynamic parameter routes at the end
     Route::get('/{id}', [QueueController::class, 'show']);
-    Route::put('/{id}/status', [QueueController::class, 'updateHey, Cortana. Status']);
+    Route::put('/{id}/status', [QueueController::class, 'updateStatus']);
     Route::delete('/{id}', [QueueController::class, 'destroy']);
 });

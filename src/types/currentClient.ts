@@ -1,4 +1,5 @@
 export interface currentClientResponse {
+  client: {
     id: number;
     firstname: string;
     middlename: string;
@@ -10,8 +11,10 @@ export interface currentClientResponse {
     contact: string;
     address: string;
     email: string;
-    passport_number: string; 
+    passport_number: string;
     purpose: string;
     priority: boolean;
     status: string;
+  };
+  ticket_number: string;
 }

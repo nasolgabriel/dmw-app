@@ -128,6 +128,9 @@ public function changeDivision(Request $request, int $id): JsonResponse
     // Clear the counter assignment since it's changing divisions
     $queueEntry->counter_id = null;
     
+    // Set status to "in queue"
+    $queueEntry->status = 'in queue';
+    
     // Save the changes
     $queueEntry->save();
     
@@ -136,7 +139,7 @@ public function changeDivision(Request $request, int $id): JsonResponse
     
     return response()->json([
         'success' => true,
-        'message' => "Queue ticket division changed to {$newDivision}",
+        'message' => "Queue ticket division changed to {$newDivision} and status set to in queue",
         'data' => $queueEntry->load(['client', 'service', 'counter'])
     ]);
 }
@@ -345,53 +348,48 @@ public function getDivisionQueues($division)
         ]);
     }
 
-    /**
-     * Update the specified queue entry status.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
     public function updateStatus(Request $request, int $id): JsonResponse
-    {
-        $queueEntry = Queue::find($id);
-        
-        if (!$queueEntry) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Queue entry not found'
-            ], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:in queue,processing,completed,cancelled'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $queueEntry->status = $request->status;
-        $queueEntry->save();
-
-        // If status is completed or cancelled, update client status to served
-        if (in_array($request->status, ['completed', 'cancelled'])) {
-            $client = Client::find($queueEntry->client_id);
-            if ($client) {
-                $client->status = 'served';
-                $client->save();
-            }
-        }
-
+{
+    $queueEntry = Queue::find($id);
+    
+    if (!$queueEntry) {
         return response()->json([
-            'success' => true,
-            'message' => 'Queue status updated successfully',
-            'data' => $queueEntry->load('client')
-        ]);
+            'success' => false,
+            'message' => 'Queue entry not found'
+        ], 404);
     }
+
+    $validator = Validator::make($request->all(), [
+        'status' => 'required|string|in:in queue,processing,completed,cancelled'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $queueEntry->status = $request->status;
+    $queueEntry->save();
+
+    // If status is completed or cancelled, update client status to served
+    if (in_array($request->status, ['completed', 'cancelled'])) {
+        $client = Client::find($queueEntry->client_id);
+        if ($client) {
+            $client->status = 'served';
+            $client->save();
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'status' => $queueEntry->status
+        ]
+    ]);
+}
+
 
     /**
      * Remove the specified queue entry from storage.

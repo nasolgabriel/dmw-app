@@ -4,6 +4,7 @@ import WindowView from "./windowView";
 import { useApiCallback } from "@/hooks/useApi";
 import {
   assignWindowClient,
+  doneApi,
   getClientTable,
   getCurrentClient,
   getCurrentClientByCounter,
@@ -106,7 +107,7 @@ const WindowViewBlock: React.FC = () => {
         return;
       }
 
-      await assignWindowClient(counter_id, data.id);
+      await assignWindowClient(counter_id, data.client.id);
       setClientData(data);
       toast.success("Client assigned to window successfully!");
     } catch (error) {
@@ -132,7 +133,7 @@ const WindowViewBlock: React.FC = () => {
         return;
       }
 
-      await assignWindowClient(counter_id, data.id);
+      await assignWindowClient(counter_id, data.client.id);
       setClientData(data);
       toast.success("Client assigned to window successfully!");
     } catch (error) {
@@ -155,6 +156,27 @@ const WindowViewBlock: React.FC = () => {
     { header: "Time", accessorKey: "time" },
   ];
 
+  // 1. markDone only needs the queue ID
+  const { execute: markDone } = useApiCallback<{ status: string }, [number]>(
+    doneApi
+  );
+
+  // 2. handleDone just passes the ID
+  const handleDone = async () => {
+    const queueId = clientData?.client?.id;
+    if (!queueId) {
+      console.warn("No client/ticket to mark done");
+      return;
+    }
+
+    try {
+      const result = await markDone(queueId);
+      console.log("doneApi response:", result);
+    } catch (error) {
+      console.error("doneApi error:", error);
+    }
+  };
+
   return (
     <WindowView
       windowTitle={windowTitle}
@@ -167,8 +189,9 @@ const WindowViewBlock: React.FC = () => {
       clientData={clientData}
       clientTableData={clientTableData ?? []}
       onRowClick={handleRowProceed}
-      clientId={clientData?.id || 0}
+      clientId={clientData?.client.id || 0}
       refetchClientTable={refetch}
+      handleDone={handleDone}
     />
   );
 };
