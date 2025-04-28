@@ -19,6 +19,7 @@ interface WindowViewProps {
   onRowClick: (id: string | number) => void;
   clientId: number;
   refetchClientTable: () => void;
+  handleDone: () => void;
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -34,6 +35,7 @@ const WindowView: React.FC<WindowViewProps> = ({
   onRowClick,
   clientId,
   refetchClientTable,
+  handleDone,
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -135,7 +137,10 @@ const WindowView: React.FC<WindowViewProps> = ({
                   "&:hover": { bgcolor: "darkgreen" },
                   "&:active": { bgcolor: "forestgreen" },
                 }}
-                onClick={handleClearCard}
+                onClick={() => {
+                  handleClearCard();
+                  handleDone();
+                }}
               >
                 Done
               </Button>

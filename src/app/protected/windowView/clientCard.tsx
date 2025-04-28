@@ -7,10 +7,10 @@ interface ClientCardProps {
 const ClientCard: React.FC<ClientCardProps> = ({ clientData }) => {
   // Always create fullName structure, fallback to empty string
   const fullName = [
-    clientData?.firstname,
-    clientData?.middlename,
-    clientData?.lastname,
-    clientData?.suffix,
+    clientData?.client.firstname,
+    clientData?.client.middlename,
+    clientData?.client.lastname,
+    clientData?.client.suffix,
   ]
     .filter(Boolean)
     .join(" ");
@@ -19,7 +19,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ clientData }) => {
     <div className="m-10">
       <div>
         <h2 className="text-xl md:text-1xl xl:text-4xl mb-10">
-          Client ID: <span className="font-bold">{clientData?.id || ""}</span>
+          TICKET NUMBER: <span className="font-bold">{clientData?.ticket_number || ""}</span>
         </h2>
 
         {/* Keep all fields visible regardless of data */}
@@ -27,34 +27,34 @@ const ClientCard: React.FC<ClientCardProps> = ({ clientData }) => {
           <span className="font-bold">Name:</span> {fullName}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
-          <span className="font-bold">Age:</span> {clientData?.age || ""}
+          <span className="font-bold">Age:</span> {clientData?.client.age || ""}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
-          <span className="font-bold">Sex:</span> {clientData?.sex || ""}
+          <span className="font-bold">Sex:</span> {clientData?.client.sex || ""}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
           <span className="font-bold">Contact Number:</span>{" "}
-          {clientData?.contact || ""}
+          {clientData?.client.contact || ""}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
           <span className="font-bold">Address:</span>{" "}
-          {clientData?.address || ""}
+          {clientData?.client.address || ""}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
-          <span className="font-bold">Email:</span> {clientData?.email || ""}
+          <span className="font-bold">Email:</span> {clientData?.client.email || ""}
         </p>
         <p className="mb-2 text-base md:text-sm xl:text-2xl">
           <span className="font-bold">Passport Number:</span>{" "}
-          {clientData?.passport_number || ""}
+          {clientData?.client.passport_number || ""}
         </p>
         <p className="mb-4 text-base md:text-sm xl:text-2xl">
           <span className="font-bold">Transaction:</span>{" "}
-          {clientData?.purpose || ""}
+          {clientData?.client.purpose || ""}
         </p>
         <p className="mb-2 text-sm xl:text-2xl">
           <span className="font-bold">Priority:</span>{" "}
-          {clientData?.priority !== undefined
-            ? clientData.priority
+          {clientData?.client.priority !== undefined
+            ? clientData.client.priority
               ? "Yes"
               : "No"
             : ""}

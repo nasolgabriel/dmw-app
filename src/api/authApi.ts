@@ -60,8 +60,8 @@ export const getClientTable = async (
       .filter(Boolean)
       .join(" "),
     time: new Date(queue.created_at).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
     }),
   }));
 };
@@ -110,3 +110,11 @@ export const getCurrentClientByCounter = async (
   return response.data.data;
 };
 
+export const doneApi = async (
+  id: number
+): Promise<{ status: string }> => {
+  const response = await axiosInstance.put(`/queues/${id}/status`, {
+    status: "completed",
+  });
+  return response.data;
+};
