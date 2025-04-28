@@ -45,12 +45,10 @@ export const getClientTable = async (
   const response = await axiosInstance.get(
     `/queues/division/${encodeURIComponent(division)}`
   );
-
   // Filter out queues with "processing" status, only keep "in queue"
   const filteredQueues = response.data.data.queues.filter(
     (queue: any) => queue.status === "in queue"
   );
-
   return filteredQueues.map((queue: any) => ({
     id: queue.client.id,
     ticket_number: queue.ticket_number,
@@ -61,7 +59,10 @@ export const getClientTable = async (
     ]
       .filter(Boolean)
       .join(" "),
-    time: queue.created_at.split("T")[1].slice(0, 5),
+    time: new Date(queue.created_at).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
   }));
 };
 
