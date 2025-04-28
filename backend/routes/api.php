@@ -42,10 +42,11 @@ Route::get('counters/stats', [ServiceCounterController::class, 'getCounterStatis
 // Service Counter routes - CRUD operations for counters
 Route::apiResource('counters', ServiceCounterController::class);
 
-// Client Routes
 Route::prefix('clients')->group(function () {
     Route::get('/', [ClientController::class, 'index']);
     Route::post('/', [ClientController::class, 'store']);
+    // New route to get client by ID at /current
+    Route::get('/{id}/current', [ClientController::class, 'current']);
     Route::get('/{id}', [ClientController::class, 'show']);
     Route::put('/{id}', [ClientController::class, 'update']);
     Route::delete('/{id}', [ClientController::class, 'destroy']);

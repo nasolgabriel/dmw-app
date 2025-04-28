@@ -10,7 +10,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
-{ /**
+{
+    
+    public function current($id)
+{
+    return Client::find($id) ?? response()->json([
+        'message' => 'Client not found'
+    ], 200);
+}
+    /**
     * Display a listing of the clients.
     *
     * @return JsonResponse

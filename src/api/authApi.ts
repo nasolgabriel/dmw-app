@@ -106,7 +106,7 @@ export const assignWindowClient = async (
 export const getCurrentClientByCounter = async (
   counter_id: number
 ): Promise<currentClientResponse> => {
-  const response = await axiosInstance.get(`/clients/${counter_id}`);
+  const response = await axiosInstance.get(`/clients/${counter_id}/current`);
   return response.data.data;
 };
 
