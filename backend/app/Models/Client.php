@@ -15,6 +15,7 @@ class Client extends Model
         'lastName',
         'contact',
         'purpose',
+        'priority', // Added priority to fillable array
         'age',
         'birthday',
         'sex',
@@ -22,7 +23,6 @@ class Client extends Model
         'passport_number',
         'email',
         'address'
-        
     ];
 
 

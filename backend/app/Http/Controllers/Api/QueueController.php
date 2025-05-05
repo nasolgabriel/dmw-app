@@ -18,6 +18,11 @@ class QueueController extends Controller
  *
  * @return JsonResponse
  */
+/**
+ * Get all available divisions with their active queue tickets
+ *
+ * @return JsonResponse
+ */
 public function getDivisions(): JsonResponse
 {
     try {
@@ -36,27 +41,39 @@ public function getDivisions(): JsonResponse
             $serviceIds = $services->pluck('id')->toArray();
             
             // Get active queues for this division with ticket numbers
+            // Include the client relationship to access priority
             $activeQueues = Queue::whereIn('service_id', $serviceIds)
                 ->whereNotIn('status', ['completed', 'cancelled'])
-                ->with(['service:id,abbreviation,description', 'counter'])
-                ->select('id', 'ticket_number', 'service_id', 'counter_id', 'status', 'created_at')
+                ->with(['service:id,abbreviation,description', 'counter', 'client:id,priority,firstName,lastName'])
+                ->select('id', 'ticket_number', 'service_id', 'client_id', 'counter_id', 'status', 'created_at')
                 ->orderBy('created_at')
                 ->get();
+            
+            // Transform and map active tickets
+            $activeTickets = $activeQueues->map(function($queue) {
+                return [
+                    'id' => $queue->id,
+                    'ticket_number' => $queue->ticket_number,
+                    'service' => $queue->service ? $queue->service->abbreviation : null,
+                    'client_name' => $queue->client ? $queue->client->firstName . ' ' . $queue->client->lastName : null,
+                    'priority' => $queue->client ? $queue->client->priority : false,
+                    'counter_id' => $queue->counter_id,
+                    'status' => $queue->status,
+                    'created_at' => Carbon::parse($queue->created_at)->setTimezone('Asia/Manila')->format('Y-m-d H:i:s')
+                ];
+            });
+            
+            // Sort active tickets - priority first, then by creation time
+            $sortedActiveTickets = $activeTickets->sortBy([
+                ['priority', 'desc'], // Sort by priority in descending order (true comes first)
+                ['created_at', 'asc']  // Then sort by creation date (oldest first)
+            ])->values(); // Use values() to reset array indexes
                 
             return [
                 'name' => $division,
                 'active_queues_count' => $activeQueues->count(),
                 'services_count' => count($serviceIds),
-                'active_tickets' => $activeQueues->map(function($queue) {
-                    return [
-                        'id' => $queue->id,
-                        'ticket_number' => $queue->ticket_number,
-                        'service' => $queue->service ? $queue->service->abbreviation : null,
-                        'counter_id' => $queue->counter_id,
-                        'status' => $queue->status,
-                        'created_at' => Carbon::parse($queue->created_at)->setTimezone('Asia/Manila')->format('Y-m-d H:i:s')
-                    ];
-                })
+                'active_tickets' => $sortedActiveTickets
             ];
         });
         

@@ -1,8 +1,10 @@
 // types.ts
-export interface ActiveTicket {
+  export interface ActiveTicket {
     id: number;
     ticket_number: string;
     service: string;
+    client_name: string;
+    priority: boolean;
     counter_id: number | null;
     status: string;
     created_at: string;
@@ -13,7 +15,9 @@ export interface ActiveTicket {
     active_queues_count: number;
     services_count: number;
     active_tickets: ActiveTicket[];
+    priority: boolean;
   }
+  
   
   export interface QueueDisplayResponse {
     success: boolean;
@@ -22,12 +26,13 @@ export interface ActiveTicket {
   
   export type CounterType = "window" | "agency" | "cashier" | "queue";
   
-  export type QueueItemData = {
+  export interface QueueItemData {
     counter: string;
     clientNumber: string | string[];
     type: CounterType;
-    division: string;
-  };
+    division?: string;
+    isPriority?: boolean | boolean[]; // Add this field to handle priority status
+  }
   
   // Define the structure for division display in the UI
   export const divisionStructure = [

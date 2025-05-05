@@ -3,33 +3,37 @@ import { Typography } from "@mui/material";
 import { divisionStructure } from "../types";
 import { useQueueDisplay } from "@/hooks/useQueueDisplay";
 import { useBlinkOnChange } from "@/hooks/useBlinkOnChange";
-import '../../../../styles/globals.css';
+import "../../../../styles/globals.css";
 
 const QueueCounters = () => {
   const { data, isLoading } = useQueueDisplay();
- 
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-full">Loading counters...</div>;
-  }
- 
+
   // Create a map for easy lookup by counter name
   const dataMap = new Map();
-  
+
   // Add window items to the map
   if (data?.windowItems) {
-    data.windowItems.forEach(item => {
+    data.windowItems.forEach((item) => {
       dataMap.set(item.counter.toUpperCase(), item);
     });
   }
-  
+
   // Add cashier item if exists
   if (data?.cashierItem) {
     dataMap.set(data.cashierItem.counter.toUpperCase(), data.cashierItem);
   }
-  
+
   // Monitor for changes to trigger blinking effect
   const blinkingCounters = useBlinkOnChange(dataMap, 3000, "clientNumber");
- 
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        Loading counters...
+      </div>
+    );
+  }
+
   return (
     <div className="flex w-full h-screen overflow-x-clip">
       {divisionStructure.map((division) => (

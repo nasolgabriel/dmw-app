@@ -68,27 +68,33 @@ class ClientController extends Controller
             'address' => 'nullable|string|max:255',
             // Remove status validation to allow default
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
             ], 422);
         }
-
-        // Merge default status 'in queue'
-        $clientData = $validator->validated();
+    
+        // Get all validated data including priority
+        $clientData = $request->all();
+        
+        // Ensure priority is properly set if provided
+        if ($request->has('priority')) {
+            $clientData['priority'] = (bool)$request->priority;
+        }
+        
+        // Default status to 'in queue'
         $clientData['status'] = 'in queue';
-
+    
         $client = Client::create($clientData);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Client created successfully',
             'data' => $client
         ], 201);
     }
-
     /**
  * Display the specified client with their assigned ticket.
  *

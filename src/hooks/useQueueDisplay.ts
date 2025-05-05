@@ -17,23 +17,22 @@ const transformApiData = (
 } => {
   const windowItems: QueueItemData[] = [];
   let cashierItem: QueueItemData | undefined;
-
-  // Collect all in-queue tickets across all divisions
-  const allQueueTickets: string[] = [];
+  const allQueueTickets: Array<{ number: string, priority: boolean }> = []; // Modified line
 
   apiData.forEach((division) => {
-    // Map active tickets that are in processing status
     const processingTickets = division.active_tickets.filter(
       (ticket) => ticket.status === "processing"
     );
 
-    // Collect all in-queue tickets
     const queueTickets = division.active_tickets.filter(
       (ticket) => ticket.status === "in queue"
     );
 
     queueTickets.forEach((ticket) => {
-      allQueueTickets.push(ticket.ticket_number);
+      allQueueTickets.push({  // Modified line
+        number: ticket.ticket_number, 
+        priority: ticket.priority 
+      });
     });
 
     // Add processing tickets as window items
@@ -86,9 +85,10 @@ const transformApiData = (
     allQueueTickets.length > 0
       ? {
           counter: "Waiting Queue",
-          clientNumber: allQueueTickets,
-          type: "queue" as CounterType, // Explicitly cast to CounterType
+          clientNumber: allQueueTickets.map(t => t.number),
+          type: "queue" as CounterType,
           division: "QUEUE MANAGEMENT",
+          isPriority: allQueueTickets.map(t => t.priority) // Add priority array
         }
       : undefined;
 
