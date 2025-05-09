@@ -7,9 +7,86 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Queue;
+use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 class ServiceCounterController extends Controller
 {
     
+/**
+ * Get the latest client assigned to a specific counter
+ *
+ * @param int $counterId
+ * @return JsonResponse
+ */
+public function getLatestClientInCounter(int $counterId): JsonResponse
+{
+    try {
+        $counter = ServiceCounter::find($counterId);
+        
+        if (!$counter) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Counter not found'
+            ], 404);
+        }
+        
+        // Find the latest queue entry for this counter that is being processed
+        $latestQueue = Queue::where('counter_id', $counterId)
+            ->where('status', 'processing')
+            ->orderBy('updated_at', 'desc')
+            ->with(['client', 'service:id,abbreviation,description'])
+            ->first();
+        
+        if (!$latestQueue) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No active client in this counter',
+                'data' => null
+            ]);
+        }
+        
+        // Get client data
+        $client = $latestQueue->client;
+        
+        // Format the response data to match the frontend interface
+        $responseData = [
+            'queue_id' => $latestQueue->id,
+            'ticket_number' => $latestQueue->ticket_number,
+            'client' => [
+                'id' => $client->id,
+                'firstname' => $client->firstName ?? $client->firstname ?? null,
+                'middlename' => $client->middleName ?? $client->middlename ?? null,
+                'lastname' => $client->lastName ?? $client->lastname ?? null,
+                'suffix' => $client->suffix ?? null,
+                'age' => $client->age ?? null,
+                'birthday' => $client->birthday ?? null,
+                'sex' => $client->sex ?? null,
+                'contact' => $client->contact ?? null,
+                'address' => $client->address ?? null,
+                'email' => $client->email ?? null,
+                'passport_number' => $client->passport_number ?? null,
+                'purpose' => $client->purpose ?? null,
+                'priority' => $client->priority ?? false,
+                'status' => $latestQueue->status
+            ],
+            'service' => $latestQueue->service,
+            'status' => $latestQueue->status,
+            'counter_number' => $counter->counter_number,
+            'processed_at' => Carbon::parse($latestQueue->updated_at)->setTimezone('Asia/Manila')->format('Y-m-d H:i:s')
+        ];
+        
+        return response()->json([
+            'success' => true,
+            'data' => $responseData
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve latest client: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
     public function index()
     {
         return response()->json(ServiceCounter::with('service')->get());
@@ -36,6 +113,7 @@ class ServiceCounterController extends Controller
         $counter = ServiceCounter::create($validated);
         return response()->json($counter, 201);
     }
+    
     
     public function update(Request $request, $id)
     {
@@ -271,6 +349,7 @@ public function getNextTicket(Request $request, $counterId)
         'counter' => $counter
     ]);
 }
+
 
 public function pickTicket(Request $request, $counterId, $ticketId)
 {

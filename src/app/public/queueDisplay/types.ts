@@ -12,8 +12,8 @@ export const divisions = [
     filter: "WELFARE REINTEGRATION",
   },
   {
-    title: "ATTACHED AGENCIES",
-    filter: "ATTACHED AGENCIES",
+    title: "OSSCO PROVIDER",
+    filter: "OSSCO PROVIDER",
   },
 ];
 
@@ -31,7 +31,7 @@ export const divisionStructure = [
     items: ["WINDOW 8", "WINDOW 9", "WINDOW 10", null], // 4 items
   },
   {
-    title: "ATTACHED AGENCIES",
+    title: "OSSCO PROVIDER",
     items: ["PAG-IBIG", "OWWA", null, null], // 4 items
   },
 ];

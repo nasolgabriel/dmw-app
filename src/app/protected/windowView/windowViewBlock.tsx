@@ -177,6 +177,8 @@ const WindowViewBlock: React.FC = () => {
     }
   };
 
+  const [isPriorityLane, setIsPriorityLane] = useState(false);
+
   return (
     <WindowView
       windowTitle={windowTitle}
@@ -192,6 +194,8 @@ const WindowViewBlock: React.FC = () => {
       clientId={clientData?.client.id || 0}
       refetchClientTable={refetch}
       handleDone={handleDone}
+      isPriorityLane={isPriorityLane}
+      setIsPriorityLane={setIsPriorityLane}
     />
   );
 };
