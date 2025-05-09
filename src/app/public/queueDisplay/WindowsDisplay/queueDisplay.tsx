@@ -13,6 +13,14 @@ const QueueDisplay: React.FC<QueueDisplayProps> = ({
   cashierData,
   queueData,
 }) => {
+  // Provide default empty arrays if data is missing
+  const clientNumbers: string[] = Array.isArray(queueData?.clientNumber)
+    ? queueData.clientNumber
+    : [];
+  const priorities: boolean[] = Array.isArray(queueData?.isPriority)
+    ? queueData.isPriority
+    : [];
+
   return (
     <div className="w-screen h-screen overflow-hidden">
       <HeaderBar />
@@ -35,26 +43,20 @@ const QueueDisplay: React.FC<QueueDisplayProps> = ({
                 IN QUEUE
               </h1>
               <div className="flex flex-col flex-wrap gap-x-10 content-start overflow-auto h-[540px] pl-10">
-                {Array.isArray(queueData?.clientNumber) ? (
-                  queueData.clientNumber.map((num: string, index: number) => {
-                    const isPriority = Array.isArray(queueData.isPriority)
-                      ? queueData.isPriority[index]
-                      : false;
-                    return (
-                      <h1
-                        key={index}
-                        className="font-bold text-[1rem] xl:text-[1.4rem] mb-2 pr-4"
-                      >
-                        <span>{num}</span>
-                        {isPriority && (
-                          <span className="text-sm text-red-500 justify-center"> (priority)</span>
-                        )}
-                      </h1>
-                    );
-                  })
-                ) : (
-                  <div className="text-gray-400">No tickets in queue</div>
-                )}
+                {clientNumbers.map((num, index) => (
+                  <h1
+                    key={index}
+                    className="font-bold text-[1rem] xl:text-[1.4rem] mb-2 pr-4"
+                  >
+                    <span>{num}</span>
+                    {priorities[index] && (
+                      <span className="text-sm text-red-500 justify-center">
+                        {" "}
+                        (priority)
+                      </span>
+                    )}
+                  </h1>
+                ))}
               </div>
             </div>
           </div>
