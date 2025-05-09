@@ -43,10 +43,10 @@ const transformApiData = (
 
       // Special handling for PAG-IBIG and OWWA
       if (divisionName === "PAG IBIG FUND") {
-        divisionName = "ATTACHED AGENCIES";
+        divisionName = "OSSCO PROVIDER";
         counterName = "PAG-IBIG";
       } else if (divisionName === "OWWA") {
-        divisionName = "ATTACHED AGENCIES";
+        divisionName = "OSSCO PROVIDER";
         counterName = "OWWA";
       } else if (divisionName === "MIGRANT WORKER PROCESSING DIVISION") {
         divisionName = "MIGRANT WORKER PROCESSING";

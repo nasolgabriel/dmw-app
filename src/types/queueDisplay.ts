@@ -49,7 +49,7 @@
       items: ["Window 8", "Window 9", "Window 10", ""]
     },
     {
-      title: "ATTACHED AGENCIES",
+      title: "OSSCO PROVIDER",
       items: ["PAG-IBIG", "OWWA", "", ""]
     }
   ];

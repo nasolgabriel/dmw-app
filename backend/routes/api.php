@@ -38,6 +38,7 @@ Route::put('counters/{id}/status', [ServiceCounterController::class, 'updateStat
 Route::put('counters/{id}/assign-staff', [ServiceCounterController::class, 'assignStaff']);
 Route::get('counters/number/{counterNumber}', [ServiceCounterController::class, 'getByCounterNumber']);
 Route::get('counters/stats', [ServiceCounterController::class, 'getCounterStatistics']);
+Route::get('counters/{counterId}/latest-client', [ServiceCounterController::class, 'getLatestClientInCounter']);
 
 // Service Counter routes - CRUD operations for counters
 Route::apiResource('counters', ServiceCounterController::class);

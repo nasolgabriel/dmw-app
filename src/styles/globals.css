@@ -2,22 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force light theme for all elements */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light; /* Force light color scheme */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Override any system theme behavior */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
   }
 }
 
+/* Add specific overrides for common elements */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+}
+
+/* Set default styles for links */
+a {
+  color: #0038A8;
+}
+
+/* These classes will ensure consistent colors regardless of system theme */
+.bg-consistent {
+  background-color: #ffffff !important;
+}
+
+.text-consistent {
+  color: #000000 !important;
+}
+
+.card-consistent {
+  background-color: #F4F4F4 !important;
 }
 
 @keyframes blink {

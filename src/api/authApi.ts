@@ -51,6 +51,7 @@ export const getClientTable = async (
   );
   return filteredQueues.map((queue: any) => ({
     id: queue.client.id,
+    priority: queue.client.priority,
     ticket_number: queue.ticket_number,
     name: [
       queue.client.firstName,
@@ -106,7 +107,7 @@ export const assignWindowClient = async (
 export const getCurrentClientByCounter = async (
   counter_id: number
 ): Promise<currentClientResponse> => {
-  const response = await axiosInstance.get(`/clients/${counter_id}/current`);
+  const response = await axiosInstance.get(`/counters/${counter_id}/latest-client`);
   return response.data.data;
 };
 

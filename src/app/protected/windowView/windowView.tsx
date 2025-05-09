@@ -1,10 +1,11 @@
-import { Button, Container } from "@mui/material";
+import { Button, Container, Switch } from "@mui/material";
 import ClientCard from "./clientCard";
 import StartIcon from "@mui/icons-material/Start";
 import { CustomTable } from "@/components/customTable/customTable";
 import HeaderBar from "@/components/headerBar/headerBar";
 import CustomModal from "@/components/modal/customModal";
 import ClientTransferModal from "./clientTransferModal";
+import { useState } from "react";
 
 interface WindowViewProps {
   windowTitle: string;
@@ -20,6 +21,8 @@ interface WindowViewProps {
   clientId: number;
   refetchClientTable: () => void;
   handleDone: () => void;
+  isPriorityLane: boolean;
+  setIsPriorityLane: (isPriorityLane: boolean) => void;
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -36,6 +39,8 @@ const WindowView: React.FC<WindowViewProps> = ({
   clientId,
   refetchClientTable,
   handleDone,
+  isPriorityLane,
+  setIsPriorityLane,
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -48,9 +53,24 @@ const WindowView: React.FC<WindowViewProps> = ({
             </h1>
           </div>
           <Container className="mt-5">
-            <h1 className="mr-8 text-[1.5rem] font-semibold ml-5 text-[#ACACAC]">
-              In Queue
-            </h1>
+            <div className="flex justify-between items-center">
+              <h1 className="mr-8 text-[1.5rem] font-semibold ml-5 text-[#ACACAC]">
+                In Queue
+              </h1>
+              <div className="flex justify-center items-center gap-2 mr-5">
+                <Switch
+                  checked={isPriorityLane}
+                  onChange={() => setIsPriorityLane(!isPriorityLane)}
+                />
+                <h3
+                  className={`mr-8 text-[1rem] font-semibold ${
+                    isPriorityLane ? "text-emerald-700" : "text-[#ACACAC]"
+                  }`}
+                >
+                  Priority
+                </h3>
+              </div>
+            </div>
             <div className="flex justify-center items-center w-[93%] h-[2px] bg-[#E5E5E5] mt-4 ml-4" />
             <CustomTable
               columns={columns}

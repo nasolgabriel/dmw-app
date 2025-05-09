@@ -78,13 +78,13 @@ export const mockQueueData: MockQueueNumber[] = [
     counter: "PAG-IBIG",
     clientNumber: 201,
     type: "agency",
-    division: "ATTACHED AGENCIES",
+    division: "OSSCO PROVIDER",
   },
   {
     counter: "OWWA",
     clientNumber: 301,
     type: "agency",
-    division: "ATTACHED AGENCIES",
+    division: "OSSCO PROVIDER",
   },
 
   // Special Counters
