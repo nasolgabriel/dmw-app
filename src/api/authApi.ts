@@ -51,6 +51,7 @@ export const getClientTable = async (
   );
   return filteredQueues.map((queue: any) => ({
     id: queue.client.id,
+    priority: queue.client.priority,
     ticket_number: queue.ticket_number,
     name: [
       queue.client.firstName,
