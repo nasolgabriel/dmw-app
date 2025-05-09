@@ -179,6 +179,11 @@ const WindowViewBlock: React.FC = () => {
 
   const [isPriorityLane, setIsPriorityLane] = useState(false);
 
+  // Filter the table data based on priority status
+  const filteredTableData = isPriorityLane
+    ? clientTableData?.filter((client) => client.priority === true) || []
+    : clientTableData || [];
+
   return (
     <WindowView
       windowTitle={windowTitle}
@@ -189,7 +194,7 @@ const WindowViewBlock: React.FC = () => {
       handleProceed={handleProceed}
       handleClearCard={handleClearCard}
       clientData={clientData}
-      clientTableData={clientTableData ?? []}
+      clientTableData={filteredTableData}
       onRowClick={handleRowProceed}
       clientId={clientData?.client.id || 0}
       refetchClientTable={refetch}

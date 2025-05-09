@@ -198,7 +198,7 @@ public function getDivisionQueues($division)
         $queues = Queue::whereIn('service_id', $serviceIds)
             ->whereNotIn('status', ['completed', 'cancelled']) // Add this line to exclude completed and cancelled queues
             ->with([
-                'client:id,firstName,middleName,lastName', 
+                'client:id,priority,firstName,middleName,lastName', 
                 'service:id,abbreviation,description'
             ])
             ->select('id', 'service_id', 'ticket_number', 'status', 'created_at', 'client_id', 'counter_id')
@@ -433,7 +433,7 @@ public function getDivisionQueues($division)
         ]);
     }
 
-    /**
+/**
      * Get the next client in the queue, prioritizing clients with priority flag.
      *
      * @return JsonResponse
@@ -471,10 +471,14 @@ public function getDivisionQueues($division)
         $nextInQueue->status = 'processing';
         $nextInQueue->save();
 
+        // Format response with priority at top level
+        $responseData = $nextInQueue->load('client')->toArray();
+        $responseData['priority'] = $nextInQueue->client->priority ?? false;
+
         return response()->json([
             'success' => true,
             'message' => 'Next client in queue retrieved',
-            'data' => $nextInQueue->load('client')
+            'data' => $responseData
         ]);
     }
 }
