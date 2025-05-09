@@ -47,7 +47,7 @@ const QueueDisplay: React.FC<QueueDisplayProps> = ({
                       >
                         <span>{num}</span>
                         {isPriority && (
-                          <span className="text-sm text-red-500 justify-center"> (prio)</span>
+                          <span className="text-sm text-red-500 justify-center"> (priority)</span>
                         )}
                       </h1>
                     );

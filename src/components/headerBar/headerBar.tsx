@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import dmw_logo from "../../assets/DMW_logo.png";
 import bagongPh from "../../assets/BagongPilipinas_logo.png";
+import { Typography } from "@mui/material";
 
 const HeaderBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -24,6 +25,16 @@ const HeaderBar: React.FC = () => {
         alt={"dmwLogo"}
         className="w-auto h-auto ml-5 p-3"
       />
+      <div className="flex justify-center items-center font-bold">
+        <Typography
+          sx={{
+            fontSize: { xs: "0.5rem", md: "0.7rem", lg: "1.2rem" },
+            fontWeight: "bold",
+          }}
+        >
+          DEPARTMENT OF MIGRANT WORKER REGION IV-A (CALABARZON)
+        </Typography>
+      </div>
       <div className="flex justify-end items-center w-full">
         <div className="flex flex-col justfiy-end text-white p-2">
           <div
