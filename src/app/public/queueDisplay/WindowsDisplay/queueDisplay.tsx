@@ -42,7 +42,7 @@ const QueueDisplay: React.FC<QueueDisplayProps> = ({
               <h1 className="font-bold text-[1rem] xl:text-[2rem] text-left pb-2">
                 IN QUEUE
               </h1>
-              <div className="flex flex-col flex-wrap gap-x-10 content-start overflow-auto h-[540px] pl-10">
+              <div className="flex flex-col flex-wrap gap-x-2 content-start overflow-auto h-[540px] pl-2">
                 {clientNumbers.map((num, index) => (
                   <h1
                     key={index}

@@ -1,4 +1,4 @@
-import { Button, Container, Switch } from "@mui/material";
+import { Button, Container, Switch, Tooltip } from "@mui/material";
 import ClientCard from "./clientCard";
 import StartIcon from "@mui/icons-material/Start";
 import { CustomTable } from "@/components/customTable/customTable";
@@ -23,6 +23,12 @@ interface WindowViewProps {
   handleDone: () => void;
   isPriorityLane: boolean;
   setIsPriorityLane: (isPriorityLane: boolean) => void;
+  tooltips?: {
+    proceed: string;
+    transfer: string;
+    clear: string;
+    done: string;
+  };
 }
 
 const WindowView: React.FC<WindowViewProps> = ({
@@ -41,6 +47,12 @@ const WindowView: React.FC<WindowViewProps> = ({
   handleDone,
   isPriorityLane,
   setIsPriorityLane,
+  tooltips = {
+    proceed: "Press 'P' to proceed",
+    transfer: "Press 'T' to transfer",
+    clear: "Press 'C' to clear",
+    done: "Press Enter to mark as done",
+  }, // Default tooltips in case none are provided
 }) => {
   return (
     <div className="w-screen h-screen">
@@ -105,19 +117,23 @@ const WindowView: React.FC<WindowViewProps> = ({
               }}
             />
             <div className="flex justify-end mt-4 mr-10">
-              <Button
-                variant="contained"
-                sx={{
-                  bgcolor: "#FEAF00",
-                  "&:hover": { bgcolor: "#E9A000" },
-                  "&:active": { bgcolor: "forestgreen" },
-                  width: "fit-Container",
-                }}
-                onClick={handleProceed}
-                disabled={!!clientData}
-              >
-                PROCEED
-              </Button>
+              <Tooltip title={tooltips.proceed} arrow placement="top">
+                <span> {/* Wrapper needed for disabled buttons */}
+                  <Button
+                    variant="contained"
+                    sx={{
+                      bgcolor: "#FEAF00",
+                      "&:hover": { bgcolor: "#E9A000" },
+                      "&:active": { bgcolor: "forestgreen" },
+                      width: "fit-Container",
+                    }}
+                    onClick={handleProceed}
+                    disabled={!!clientData}
+                  >
+                    PROCEED
+                  </Button>
+                </span>
+              </Tooltip>
             </div>
           </Container>
         </div>
@@ -126,19 +142,21 @@ const WindowView: React.FC<WindowViewProps> = ({
             <ClientCard clientData={clientData} />
             {/* Action Buttons */}
             <div className="flex justify-end gap-5 mr-10 mb-10">
-              <Button
-                variant="contained"
-                sx={{
-                  bgcolor: "#FF8113",
-                  "&:hover": { bgcolor: "#FF7700" },
-                  "&:active": { bgcolor: "maroon" },
-                }}
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-              >
-                Transfer
-              </Button>
+              <Tooltip title={tooltips.transfer} arrow placement="top">
+                <Button
+                  variant="contained"
+                  sx={{
+                    bgcolor: "#FF8113",
+                    "&:hover": { bgcolor: "#FF7700" },
+                    "&:active": { bgcolor: "maroon" },
+                  }}
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Transfer
+                </Button>
+              </Tooltip>
               <CustomModal
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -150,20 +168,22 @@ const WindowView: React.FC<WindowViewProps> = ({
                   handleClearCard={handleClearCard}
                 />
               </CustomModal>
-              <Button
-                variant="contained"
-                sx={{
-                  bgcolor: "green",
-                  "&:hover": { bgcolor: "darkgreen" },
-                  "&:active": { bgcolor: "forestgreen" },
-                }}
-                onClick={() => {
-                  handleClearCard();
-                  handleDone();
-                }}
-              >
-                Done
-              </Button>
+              <Tooltip title={tooltips.done} arrow placement="top">
+                <Button
+                  variant="contained"
+                  sx={{
+                    bgcolor: "green",
+                    "&:hover": { bgcolor: "darkgreen" },
+                    "&:active": { bgcolor: "forestgreen" },
+                  }}
+                  onClick={() => {
+                    handleClearCard();
+                    handleDone();
+                  }}
+                >
+                  Done
+                </Button>
+              </Tooltip>
             </div>
           </div>
           <div className="p-10">
