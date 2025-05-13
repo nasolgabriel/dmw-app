@@ -172,8 +172,11 @@ const WindowViewBlock: React.FC = () => {
     try {
       const result = await markDone(queueId);
       console.log("doneApi response:", result);
+      setClientData(null); // Clear client data after marking as done
+      toast.success("Client marked as done");
     } catch (error) {
       console.error("doneApi error:", error);
+      toast.error("Failed to mark client as done");
     }
   };
 
@@ -183,6 +186,52 @@ const WindowViewBlock: React.FC = () => {
   const filteredTableData = isPriorityLane
     ? clientTableData?.filter((client) => client.priority === true) || []
     : clientTableData || [];
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only register shortcuts if not typing in an input field
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA" ||
+        isModalOpen
+      ) {
+        return;
+      }
+
+      switch (event.key.toLowerCase()) {
+        case "p":
+          handleProceed();
+          break;
+        case "t":
+          setIsModalOpen(true);
+          break;
+        case "c":
+          handleClearCard();
+          break;
+        case "enter":
+          if (clientData) {
+            handleDone();
+          }
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [tempClient, clientData, isModalOpen]);
+
+  // Define tooltips for buttons with the same style as SubmissionModal
+  const tooltips = {
+    proceed: "Press 'P' to proceed",
+    transfer: "Press 'T' to transfer",
+    clear: "Press 'C' to clear",
+    done: "Press Enter to mark as done",
+  };
 
   return (
     <WindowView
@@ -196,11 +245,12 @@ const WindowViewBlock: React.FC = () => {
       clientData={clientData}
       clientTableData={filteredTableData}
       onRowClick={handleRowProceed}
-      clientId={clientData?.client.id || 0}
+      clientId={clientData?.client?.id || 0}
       refetchClientTable={refetch}
       handleDone={handleDone}
       isPriorityLane={isPriorityLane}
       setIsPriorityLane={setIsPriorityLane}
+      tooltips={tooltips}
     />
   );
 };

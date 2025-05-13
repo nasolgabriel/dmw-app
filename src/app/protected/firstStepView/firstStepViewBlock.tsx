@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FirstStepView from "./firstStepView";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,10 +9,13 @@ import { useApiCallback } from "@/hooks/useApi";
 import { firstStepForm } from "@/types/firstStepForm";
 import { clientInfo, getTicketNumber, logoutApi } from "@/api/authApi";
 import { toast, ToastContainer } from "react-toastify";
+import SubmissionModal from "./SubmissionModal/submissionModal";
 
 const FirstStepViewBlock: React.FC = () => {
   const [windowTitle, setWindowTitle] = useState("FIRST STEP");
   const [age, setAge] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<ClientInfoFormData | null>(null);
   const navigate = useNavigate();
 
   const { execute: submitClientInfo, loading } = useApiCallback(
@@ -79,26 +82,36 @@ const FirstStepViewBlock: React.FC = () => {
     }
   }, [birthdate]);
 
+  // This function is called when the form is submitted
   const onSubmit = async (data: ClientInfoFormData) => {
+    // Store form data and open the confirmation modal
+    setFormData(data);
+    setIsModalOpen(true);
+  };
+
+  // This function is called when the user confirms the submission in the modal
+  const handleConfirmSubmission = async () => {
+    if (!formData) return;
+
     try {
       // Transform the data to match the API interface
       const apiPayload: firstStepForm = {
-        firstName: data.firstName,
-        middleName: data.middleName || null,
-        lastName: data.surname,
-        contact: data.phoneNumber,
-        purpose: Array.isArray(data.transactionType)
-          ? data.transactionType.join(", ")
+        firstName: formData.firstName,
+        middleName: formData.middleName || null,
+        lastName: formData.surname,
+        contact: formData.phoneNumber,
+        purpose: Array.isArray(formData.transactionType)
+          ? formData.transactionType.join(", ")
           : "",
-        priority: data.priority,
+        priority: formData.priority,
         age: age || 0,
-        birthday: data.birthdate
-          ? new Date(data.birthdate).toISOString().split("T")[0]
+        birthday: formData.birthdate
+          ? new Date(formData.birthdate).toISOString().split("T")[0]
           : null,
-        sex: data.sex.toLowerCase() as "male" | "female",
-        passport_number: data.passportNumber || null,
-        email: data.email || null,
-        address: data.address || null,
+        sex: formData.sex.toLowerCase() as "male" | "female",
+        passport_number: formData.passportNumber || null,
+        email: formData.email || null,
+        address: formData.address || null,
       };
 
       // Execute the API call
@@ -130,10 +143,21 @@ const FirstStepViewBlock: React.FC = () => {
       });
 
       console.log("Ticket Number:", ticketNumber);
+
+      // Close the modal
+      setIsModalOpen(false);
+
+      // Optionally reset the form
+      // resetForm();
     } catch (error) {
       console.error("Submission failed:", error);
       // Add error state handling here
+      setIsModalOpen(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const resetForm = () => {
@@ -168,6 +192,11 @@ const FirstStepViewBlock: React.FC = () => {
         }}
         windowTitle={windowTitle}
         handleLogout={handleLogout}
+      />
+      <SubmissionModal
+        isModalOpen={isModalOpen}
+        handleCloseModal={handleCloseModal}
+        handleConfirmSubmission={handleConfirmSubmission}
       />
     </>
   );
